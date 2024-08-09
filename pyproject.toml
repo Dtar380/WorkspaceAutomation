@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "WorkSpaceAutomation"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "python-dotenv==1.0.1",
+    "setuptools==72.1.0",
+    "wheel==0.44.0",
+    "requests==2.32.3",
+    "click==8.1.7",
+    "yaspin==3.0.2",
+    "inquirer==3.3.0"
+]
+license = {file = "LICENSE"}
+authors = [{name = "Dtar380"}]
+description = "A project to help all fellow devs to not waste time in doing the boring and repetitive stuff"
+readme = "README.md"
+keywords = []
+classifiers = [
+  # How mature is this project? Common values are
+  #   3 - Alpha
+  #   4 - Beta
+  #   5 - Production/Stable
+  "Development Status :: 4 - Beta",
+
+  # Indicate who your project is intended for
+  "Intended Audience :: Developers",
+  "Topic :: Utilities",
+  "Topic :: Software Development",
+
+  # Pick your license as you wish (see also "license" above)
+  "License :: OSI Approved :: MIT License",
+
+  # Specify the Python versions you support here.
+  "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/Dtar380/WorkspaceAutomation"
+Documentation = "https://readthedocs.org"
+Repository = "https://github.com/Dtar380/WorkspaceAutomation"
+"Bug Tracker" = "https://github.com/Dtar380/WorkspaceAutomation/issues"
+Changelog = "https://github.com/Dtar380/Workspace/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+dev = [
+    "pytest"
+]
+
+
+# content below this line added by briefcase convert
+# This project was generated with 0.3.19 using template: https://github.com/beeware/briefcase-template@v0.3.19
+[tool.briefcase]
+project_name = "WorkSpace Automation"
+bundle = "com.github"
+version = "0.1.0"
+url = "https://github.com/Dtar380/WorkspaceAutomation"
+license.file = "LICENSE"
+author = "Dtar380"
+author_email = "dtar380@icloud.com"
+
+[tool.briefcase.app.WorkspaceAutomation]
+formal_name = "WorkSpace Automation"
+description = "A project to help all fellow devs to not waste time in doing the boring and repetitive stuff"
+
+long_description = """More details about the app should go here.
+"""
+
+sources = [
+    "WorkspaceAutomation",
+]
+test_sources = [
+    "tests",
+]

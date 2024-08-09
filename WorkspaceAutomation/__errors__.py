@@ -7,27 +7,11 @@
 '''
 
 ########################################
-#####  IMPORTING MODULES           #####
-########################################
-
-#####  EXTERNAL IMPORTS
-
-
-#####  INTERNAL IMPORTS
-
-
-########################################
 #####  CODE                        #####
 ########################################
 
-#####  GLOBAL VARIABLES
-
-
 #####  CLASS
-class Renderer:
-
-    def __init__(self) -> None:
-        pass
+class API_KEY_ERROR(Exception): ...
 
 #####  RUN FILE
 if __name__ == "__main__":

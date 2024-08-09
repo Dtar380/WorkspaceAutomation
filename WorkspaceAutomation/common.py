@@ -3,7 +3,7 @@
 ########################################
 
 '''
-
+Code from https://gist.github.com/mivade/384c2c41c3a29c637cb6c603d4197f9f
 '''
 
 ########################################
@@ -11,7 +11,8 @@
 ########################################
 
 #####  EXTERNAL IMPORTS
-
+from time import sleep
+import os
 
 #####  INTERNAL IMPORTS
 
@@ -20,15 +21,7 @@
 #####  CODE                        #####
 ########################################
 
-#####  GLOBAL VARIABLES
-
-
-#####  CLASS
-class Renderer:
-
-    def __init__(self) -> None:
-        pass
-
-#####  RUN FILE
-if __name__ == "__main__":
-    pass
+#####  FUNCTIONS
+def clear(t: int):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    sleep(t)
