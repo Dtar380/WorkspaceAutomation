@@ -3,7 +3,7 @@
 ########################################
 
 '''
-Code from https://gist.github.com/mivade/384c2c41c3a29c637cb6c603d4197f9f
+
 '''
 
 ########################################
@@ -13,9 +13,6 @@ Code from https://gist.github.com/mivade/384c2c41c3a29c637cb6c603d4197f9f
 #####  EXTERNAL IMPORTS
 from time import sleep
 import os
-
-#####  INTERNAL IMPORTS
-
 
 ########################################
 #####  CODE                        #####

@@ -10,24 +10,6 @@
 #####  IMPORTING MODULES           #####
 ########################################
 
-#####  EXTERNAL IMPORTS
-
-
 #####  INTERNAL IMPORTS
-
-
-########################################
-#####  CODE                        #####
-########################################
-
-#####  GLOBAL VARIABLES
-
-
-#####  CLASS
-
-
-#####  FUNCTIONS
-
-#####  RUN FILE
-if __name__ == "__main__":
-    pass
+from .apps import AppsManager
+from .webs import WebsManager

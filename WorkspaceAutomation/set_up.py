@@ -45,15 +45,15 @@ class SetUp:
 
         clear(0)
         if not path.exists(self.settings_paths[system()]):
-        self.OS = self.__check_compatibility()
+            self.OS = self.__check_compatibility()
         clear(0.5)
 
         if custom_directory:
             self.directory = custom_directory
-            self.folders = self.__get_folders()
         else:
             self.directory = Path(Path.joinpath(Path.home(), "Documents"))
-            self.folders = self.__get_folders()
+        
+        self.folders = self.__get_folders()
 
         if self.folders and not inquirer.confirm(message="Want to create folders?"):
             self.sub_directories = self.__select_folders()
@@ -96,10 +96,8 @@ class SetUp:
 
     def __select_folders(self) -> list:
 
-        git_services = ["git", "github", "gitlab"]
-        for git_service in git_services:
-            if git_service in self.folders:
-                default = [git_service]
+        if "github" in self.folders:
+            default = ["github"]
 
         question = [inquirer.Checkbox(
             name = "folders", 

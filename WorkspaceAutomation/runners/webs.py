@@ -24,10 +24,7 @@
 
 
 #####  CLASS
+class WebsManager:
 
-
-#####  FUNCTIONS
-
-#####  RUN FILE
-if __name__ == "__main__":
-    pass
+    def __init__(self) -> None:
+        pass
