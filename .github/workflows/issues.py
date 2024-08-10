@@ -62,7 +62,7 @@ def check_for_assignable_users(issue_number: int) -> list:
 
     assignees = []
     for contributor in contributors:
-        if requests.get(f"repos/{REPO}/issues/{issue_number}/assignees/{contributor}").status_code == 204:
+        if requests.get(f"{API}repos/{REPO}/issues/{issue_number}/assignees/{contributor}").status_code == 204:
             assignees.append(contributor)
 
     return assignees
@@ -83,7 +83,6 @@ def main() -> None:
         comment = "This Issue is getting closed because it does not follow any given template.<br>\
 Try reposting the issue following one of the given templates."
         comment_issue(issue_number, comment)
-        print(comment)
         close_issue(issue_number)
         
     elif check_for_assignable_users(issue_number):
