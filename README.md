@@ -8,7 +8,9 @@
   <img src="https://custom-icon-badges.demolab.com/github/license/Dtar380/WorkspaceAutomation?style=for-the-badge&color=0ae63d&logo=law
   " height="20">
 </a>
-<img src="https://custom-icon-badges.demolab.com/github/stars/Dtar380/WorkspaceAutomation?style=for-the-badge&logo=star&logoColor=white&color=0ae63d" height="20">
+<a>
+  <img src="https://custom-icon-badges.demolab.com/github/stars/Dtar380/WorkspaceAutomation?style=for-the-badge&logo=star&logoColor=white&color=0ae63d" height="20">
+</a>
 
 # :computer: WorkspaceAutomation :computer:
 

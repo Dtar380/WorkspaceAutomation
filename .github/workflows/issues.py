@@ -2,7 +2,7 @@
 #####  IMPORTING MODULES           #####
 ########################################
 
-from os import environ
+import os
 import requests
 
 ########################################
@@ -11,7 +11,10 @@ import requests
 
 #####  GLOBAL VARIABLES
 API = "https://api.github.com/"
-API_TOKEN = environ("API_TOKEN")
+
+ENV = os.environ("GITHUB_ENV")
+
+API_TOKEN = ENV["API_TOKEN"]
 REPO = environ("REPO")
 TEMPLATES = ".github/ISSUE_TEMPLATES"
 
