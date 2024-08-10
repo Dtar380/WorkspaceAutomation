@@ -12,10 +12,8 @@ import requests
 #####  GLOBAL VARIABLES
 API = "https://api.github.com/"
 
-ENV = os.environ("GITHUB_ENV")
-
-API_TOKEN = ENV["API_TOKEN"]
-REPO = environ("REPO")
+API_TOKEN = os.environ["API_TOKEN"]
+REPO = os.environ["REPO"]
 TEMPLATES = ".github/ISSUE_TEMPLATES"
 
 headers = {
