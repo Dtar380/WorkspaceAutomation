@@ -25,7 +25,7 @@ headers = {
 #####  FUNCTIONS
 ## Actions to perform
 def get_issue() -> int:
-    response = requests.get(f"{API}repos/{REPO}/issues", headers=headers)
+    response = requests.get(f"{API}repos/{REPO}/issues", headers=headers).json()
     return response[0]["number"]
 
 def close_issue(issue_number: int) -> None:
@@ -52,7 +52,7 @@ def add_assignees(issue_number: int, assignees: list) -> None:
 ## Verifications to perform
 # TEMPLATES
 def check_if_follows_template(issue_number: int) -> bool:
-    issue = requests.get(f"{API}repos/{REPO}/issues", headers=headers)
+    issue = requests.get(f"{API}repos/{REPO}/issues", headers=headers).json()
     if not issue["labels"]:
         return False
     return True
@@ -69,7 +69,7 @@ def check_for_assignable_users(issue_number: int) -> list:
     return assignees
 
 def check_for_colaborators() -> list:
-    response = requests.get(f"{API}repos/{REPO}/contributors", headers=headers)
+    response = requests.get(f"{API}repos/{REPO}/contributors", headers=headers).json()
 
     colaborators = []
     for colaborator in response:
