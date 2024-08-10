@@ -11,7 +11,7 @@ jobs:
     
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkou Code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       # SetUp python
@@ -27,6 +27,6 @@ jobs:
       # Runs a single command using the runners shell
       - name: Automate Issue
         env:
-          API_TOKEN: ${{ secrets.API_TOKEN }}
+          API_KEY: ${{ secrets.API_KEY }}
           REPO: ${{ github.repository }}
         run: python .github/workflows/issues.py
