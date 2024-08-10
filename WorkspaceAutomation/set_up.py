@@ -37,7 +37,7 @@ class SetUp:
         
     settings_paths = {
         "Windows": str(Path.home()) + f"\\AppData\\Roaming\\WorkSpaceAutomation",
-        "Darwin": str(Path.home()) + f"\\Library\\Application\\ Support\\WorkSpaceAutomation",
+        "Darwin": str(Path.home()) + f"\\Library\\Application Support\\WorkSpaceAutomation",
         "Linux": str(Path.home()) + f"\\.config\\WorkSpaceAutomation"
     }
 
@@ -218,7 +218,7 @@ class SetUp:
 
         code_paths = {
             "Windows": str(Path.home()) + f"\\AppData\\Roaming\\{code_dir}\\User\\globalStorage\\storage.json",
-            "Darwin": str(Path.home()) + f"\\Library\\Application\\ Support\\{code_dir}\\User\\globalStorage\\storage.json",
+            "Darwin": str(Path.home()) + f"\\Library\\Application Support\\{code_dir}\\User\\globalStorage\\storage.json",
             "Linux": str(Path.home()) + f"\\.config\\{code_dir}\\User\\globalStorage\\storage.json"
         }
 
