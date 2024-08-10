@@ -1,16 +1,18 @@
-<a href="https://github.com/Dtar380/WorkspaceAutomation/releases/latest">
-  <img src="https://custom-icon-badges.demolab.com/github/downloads/Dtar380/WorkspaceAutomation/total?style=for-the-badge&logoColor=white&logo=download&color=0ae63d" height="20">
-</a>
-<a href="https://github.com/Dtar380/WorkspaceAutomation/issues">
-  <img src="https://custom-icon-badges.demolab.com/github/issues-raw/Dtar380/WorkspaceAutomation?style=for-the-badge&color=0ae63d&logo=issue" height="20">
-</a>
-<a href="https://github.com/Dtar380/WorkspaceAutomation/blob/main/LICENSE">
-  <img src="https://custom-icon-badges.demolab.com/github/license/Dtar380/WorkspaceAutomation?style=for-the-badge&color=0ae63d&logo=law
-  " height="20">
-</a>
-<a>
-  <img src="https://custom-icon-badges.demolab.com/github/stars/Dtar380/WorkspaceAutomation?style=for-the-badge&logo=star&logoColor=white&color=0ae63d" height="20">
-</a>
+
+<div>
+  <a href="https://github.com/Dtar380/WorkspaceAutomation/releases/latest">
+    <img src="https://custom-icon-badges.demolab.com/github/downloads/Dtar380/WorkspaceAutomation/total?style=for-the-badge&logoColor=white&logo=download&color=0ae63d" height="20">
+  </a>
+  <a href="https://github.com/Dtar380/WorkspaceAutomation/issues">
+    <img src="https://custom-icon-badges.demolab.com/github/issues-raw/Dtar380/WorkspaceAutomation?style=for-the-badge&color=0ae63d&logo=issue" height="20">
+  </a>
+  <a href="https://github.com/Dtar380/WorkspaceAutomation/blob/main/LICENSE">
+    <img src="https://custom-icon-badges.demolab.com/github/license/Dtar380/WorkspaceAutomation?style=for-the-badge&color=0ae63d&logo=law" height="20">
+  </a>
+  <a href="https://github.com/Dtar380/WorkspaceAutomation">
+    <img src="https://custom-icon-badges.demolab.com/github/stars/Dtar380/WorkspaceAutomation?style=for-the-badge&logo=star&logoColor=white&color=0ae63d" height="20">
+  </a>
+</div>
 
 # :computer: WorkspaceAutomation :computer:
 
