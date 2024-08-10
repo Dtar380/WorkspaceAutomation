@@ -12,7 +12,7 @@ import requests
 #####  GLOBAL VARIABLES
 API = "https://api.github.com/"
 
-API_TOKEN = os.environ["API_TOKEN"]
+API_TOKEN = os.environ["API_KEY"]
 REPO = os.environ["REPO"]
 
 headers = {
