@@ -4,6 +4,7 @@
 
 import os
 import requests
+import random
 
 ########################################
 #####  CODE                        #####
@@ -35,8 +36,8 @@ def comment_issue(issue_number: int, comment: str) -> None:
     payload = f'{{"body": "{comment}"}}'
     response = requests.post(f"{API}repos/{REPO}/issues/{issue_number}/comments", data=payload, headers=headers)
 
-def add_assignees(issue_number: int, assignees: list) -> None:
-    assignees_str = "[" 
+def add_assignees(issue_number: int, assignees: str) -> None:
+    assignees_str = "["
     
     for i, assignee in enumerate(assignees):
         if i != 0:
@@ -52,12 +53,12 @@ def add_assignees(issue_number: int, assignees: list) -> None:
 # TEMPLATES
 def check_if_follows_template(issue_number: int) -> bool:
     issue = requests.get(f"{API}repos/{REPO}/issues/{issue_number}", headers=headers).json()
-    if not issue["labels"]:
+    if not issue["labels"] and not issue["body"]:
         return False
     return True
 
 # ASSIGNEES
-def check_for_assignable_users(issue_number: int) -> list:
+def check_for_assignable_users(issue_number: int) -> str:
     contributors = check_for_colaborators()
 
     assignees = []
@@ -65,7 +66,10 @@ def check_for_assignable_users(issue_number: int) -> list:
         if requests.get(f"{API}repos/{REPO}/issues/{issue_number}/assignees/{contributor}").status_code == 204:
             assignees.append(contributor)
 
-    return assignees
+    if len(assignees) < 3:
+        return assignees
+
+    return random.sample(assignees, 3)
 
 def check_for_colaborators() -> list:
     response = requests.get(f"{API}repos/{REPO}/contributors", headers=headers).json()
