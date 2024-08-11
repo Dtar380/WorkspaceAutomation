@@ -12,6 +12,8 @@
 
 # READING APP DATA
 from dotenv import load_dotenv
+from cryptography.fernet import Fernet
+from .common import key_generator
 from pathlib import Path
 import os
 import json
@@ -27,16 +29,18 @@ from .common import clear
 # ERRORS
 from .__errors__ import *
 
+# INTERNAL IMPORTS
+from builders.github import Github
+from builders.Contents import ContentsManager
+from runners.apps import AppsManager
+from runners.webs import WebsManager
+
 ########################################
 #####  CODE                        #####
 ########################################
 
-##### GLOBAL VARIABLES    
-settings_paths = {
-    "Windows": str(Path.home()) + f"\\AppData\\Roaming\\WorkSpaceAutomation",
-    "Darwin": str(Path.home()) + f"\\Library\\Application\\ Support\\WorkSpaceAutomation",
-    "Linux": str(Path.home()) + f"\\.config\\WorkSpaceAutomation"
-}
+##### GLOBAL VARIABLES
+from .__vars__ import settings_paths, code_paths
 
 # MOVE TO SETTINGS PATH
 MAIN_DIRECTORY = settings_paths[os.system()]
@@ -45,8 +49,8 @@ os.chdir(MAIN_DIRECTORY) # CWD
 #####  CLASS
 class App:
 
-    def __init__(self, command: str, **kwargs) -> None:
-        
+    def __init__(self, command: str, key: str, **kwargs) -> None:
+
         # DICT CONTAINING ALL COMMANDS AVIABLE
         commands = {
             "create": self.__create_workspace,
@@ -66,7 +70,8 @@ class App:
 
         # LOAD API_KEY
         load_dotenv(".secrets")
-        self.API_TOKEN = os.getenv("API_KEY")
+        self.API_KEY = os.getenv("API_KEY")
+        self.API_KEY = Fernet(key_generator(key)).decrypt(self.API_KEY).decode()
 
         # LOAD SETTINGS
         with open("settings.json", "r+") as f:
@@ -81,7 +86,71 @@ class App:
     # WORKSPACE RELATED
     # Create a new workspace from scratch
     def __create_workspace(self, **kwargs) -> None:
-        pass
+
+        questions = []
+
+        try:
+            name = kwargs["name"]
+            directory = kwargs["directory"]
+            github = kwargs["github"]
+        except:
+            questions.extend([
+                inquirer.List("directory", message="Select the directory for the project", choices=self.settings["directories"]),
+                inquirer.Text("name", message="Enter the name for the project"),
+                inquirer.List("github", message="Want to create a github repo?", choices=["Yes", "No"])
+            ])
+
+        questions.append(inquirer.List("langauge",message = "What will be the main language", choices=self.settings["langauges"]))
+
+        answers = inquirer.prompt(questions)
+        language = answers["language"]
+
+        try:
+            name = answers["name"]
+            directory = answers["directory"]
+            github = True if answers["github"] == "Yes" else False
+        except:
+            pass
+
+        questions = []
+
+        if github:
+            try:
+                owner = kwargs["owner"]
+                private = kwargs["private"]
+                license = kwargs["license"]
+                if license and license not in ["MIT", "GPL-3.0", "Unlicense"]:
+                    raise LicenseNotFound("License provided is not supported.")
+            except:
+                questions.extend([
+                    inquirer.Text("owner", message="Enter the owner of the Repo: ", default=self.settings["git-user"]),
+                    inquirer.List("private", message="Want to make the repo private?", choices=["Yes", "No"] ,default="Yes"),
+                    inquirer.List("license", message="What license do you want to use?", choices=["MIT", "GPL-3.0", "Unlicense"])
+                ])
+
+                answers = inquirer.prompt(questions)
+                owner = answers["owner"]
+                private = "true" if answers["private"] == "Yes" else "false"
+                license = answers["license"]
+
+            if owner == self.settings["git-user"]:
+                action = 0
+            else:
+                action = 1
+
+            with open("resources/languages.json", "r+") as f:
+                data = json.load(f)
+                language = data[language]
+
+            Github()
+
+        ContentsManager()
+
+        # ADD A MENU HERE TO ADD APPS
+        AppsManager()
+
+        # ADD A MENU HERE TO ADD URLS
+        WebsManager()
 
     # Import a workspace from your directories in settings.json
     def __import_workspace(self, **kwargs) -> None:
@@ -107,6 +176,14 @@ class App:
     def __edit_workspace(self, **kwargs) -> None:
         pass
 
+    # Save urls on the go with this command
+    def __save_urls(self, **kwargs) -> None:
+        pass
+
+    # Save the workspace to the json file
+    def __save_workspace(self, **kwargs) -> None:
+        pass
+
     # CONFIG RELATED
     # Change VsCode paths in settings.json
     @yaspin(text=" Saving changes...")
@@ -118,15 +195,9 @@ class App:
             code_dir = "code - insiders"
             code_PATH = "code-insiders"
 
-        code_paths = {
-            "Windows": str(Path.home()) + f"\\AppData\\Roaming\\{code_dir}\\User\\globalStorage\\storage.json",
-            "Darwin": str(Path.home()) + f"\\Library\\Application\\ Support\\{code_dir}\\User\\globalStorage\\storage.json",
-            "Linux": str(Path.home()) + f"\\.config\\{code_dir}\\User\\globalStorage\\storage.json"
-        }
-
         self.settings["vscode"] = {
             "type": code_PATH,
-            "path": code_paths[os.system()]
+            "path": code_paths[os.system()].format(code_dir)
         }
 
         with open("settings.json", "w+") as f:

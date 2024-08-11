@@ -12,6 +12,8 @@
 
 # FILE MANAGEMENT
 from os import mkdir
+from cryptography.fernet import Fernet
+from .common import key_generator
 import json
 
 # ENV MANAGEMENT
@@ -32,21 +34,21 @@ from .common import clear
 #####  CODE                        #####
 ########################################
 
+##### GLOBAL VARIABLES
+from .__vars__ import settings_paths, code_paths
+
 #####  CLASS
 class SetUp:
-        
-    settings_paths = {
-        "Windows": str(Path.home()) + f"\\AppData\\Roaming\\WorkSpaceAutomation",
-        "Darwin": str(Path.home()) + f"\\Library\\Application Support\\WorkSpaceAutomation",
-        "Linux": str(Path.home()) + f"\\.config\\WorkSpaceAutomation"
-    }
 
     def __init__(self, custom_directory: str = None) -> None:
 
         clear(0)
-        if not path.exists(self.settings_paths[system()]):
+        if not path.exists(settings_paths[system()]):
+            mkdir(settings_paths[system()])
             self.OS = self.__check_compatibility()
         clear(0.5)
+
+        self.key = key_generator(inquirer.text(message="Enter a password (this will be used to encrypt the API_KEY)"))
 
         if custom_directory:
             self.directory = custom_directory
@@ -66,6 +68,8 @@ class SetUp:
         with open("resources/languages.json", "r+") as f:
             self.languages = json.load(f).keys()
 
+        self.username = self.__get_github_username()
+        clear(0.5)
         self.languages = self.__select_languages()
         clear(0.5)
         self.vscode = inquirer.list_input(message="What version of VSCode do you use", choices=["code", "insiders"])
@@ -79,7 +83,7 @@ class SetUp:
 
     # CHECK IF OS IS COMPATIBLE
     @yaspin(text=" Checking compatibility...")
-    def __check_compatibility(self) -> None:
+    def __check_compatibility(self) -> str:
         if system() == "Linux":
             return "Linux"
         elif system() == "Darwin":
@@ -122,6 +126,16 @@ class SetUp:
     def __create_folders(self) -> None:
         for i in self.sub_directories:
             mkdir(path.join(self.directory, i))
+
+    # FUNCTIONS FOR GETTING GH USERNAME
+    def __get_github_username(self) -> str:
+        while True:
+            user_name = inquirer.text(message="Enter your GitHub username")
+            response = get(f"https://github.com/{user_name}")
+            if response.status_code != 200:
+                print(f"User {user_name} was not found. Please try again")
+            else:
+                return user_name
 
     # FUNCTION FOR SELECTING LANGS USED BY USER
     def __select_languages(self) -> list:
@@ -191,7 +205,7 @@ class SetUp:
             return None
 
     # GET USER INPUT API KEY AND CHECK IF ITS VALID
-    def __get_api_key(self) -> None:
+    def __get_api_key(self) -> str:
         while True:
             key = inquirer.text(message="Input you GitHub API Key")
             
@@ -216,13 +230,7 @@ class SetUp:
         code_dir = "code - insiders" if self.vscode == "insiders" else self.vscode
         code_PATH = "code-insiders" if self.vscode == "insiders" else self.vscode
 
-        code_paths = {
-            "Windows": str(Path.home()) + f"\\AppData\\Roaming\\{code_dir}\\User\\globalStorage\\storage.json",
-            "Darwin": str(Path.home()) + f"\\Library\\Application Support\\{code_dir}\\User\\globalStorage\\storage.json",
-            "Linux": str(Path.home()) + f"\\.config\\{code_dir}\\User\\globalStorage\\storage.json"
-        }
-
-        code_path = code_paths[system()]
+        code_path = code_paths[system()].format(code_dir)
 
         settings = {
             "directories": self.sub_directories,
@@ -231,15 +239,20 @@ class SetUp:
                 "type": code_PATH,
                 "path": code_path
             },
+            "git-user": self.username,
             "OS": self.OS
         }
 
-        settings_path = self.settings_paths[system()]
-
-        mkdir(settings_path)
+        settings_path = settings_paths[system()]
 
         with open(path.join(settings_path, "settings.json"), "w+") as f:
             json.dump(settings, f)
+
+        if not path.exists(path.join(settings_path, "workspaces.json")):
+            with open(path.join(settings_path, "workspaces.json", "w+")) as f:
+                pass
+
+        self.API_KEY = Fernet(self.key).encrypt(self.API_KEY.encode())
 
         with open(path.join(settings_path, ".secrets"), "w+") as f:
             f.write(f'API_KEY = "{self.API_KEY}"')

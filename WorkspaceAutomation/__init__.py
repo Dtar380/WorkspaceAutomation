@@ -9,9 +9,6 @@
 #####  IMPORTING MODULES           #####
 ########################################
 
-#####  EXTERNAL IMPORTS
-import importlib.metadata
-
 #####  INTERNAL IMPORTS
 from .__main__ import Renderer
 
@@ -20,7 +17,7 @@ from .__main__ import Renderer
 ########################################
 
 #####  GLOBAL VARIABLES
-__version__ = importlib.metadata.version(__package__ or __name__)
+__version__ = "0.1.0"
 __description__ = "A project to help all fellow devs to not waste time in doing the boring and repetitive stuff"
 __author__ = "Dtar380"
 __license__ = "GPL v3.0"
