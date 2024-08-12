@@ -12,7 +12,7 @@ dependencies = [
     "click==8.1.7",
     "yaspin==3.0.2",
     "inquirer==3.3.0",
-    "cryptography==43.0.0"
+    "cryptography==43.0.0",
 ]
 license = {file = "LICENSE"}
 authors = [{name = "Dtar380"}]
@@ -55,6 +55,12 @@ test = [
     "pytest",
 ]
 
+[project.scripts]
+Workspace-Auto = "WorkspaceAutomation:__main__"
+
+[tool.setuptools.packages.find]
+include = ["WorkspaceAutomation*"]
+exclude = ["tests*"]
 
 # content below this line added by briefcase convert
 # This project was generated with 0.3.19 using template: https://github.com/beeware/briefcase-template@v0.3.19

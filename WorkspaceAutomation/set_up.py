@@ -148,61 +148,7 @@ class SetUp:
         return answer["languages"]
 
     # FUNCTIONS RELATED WITH APP SELECTION
-    def __select_apps(self) -> list:
-        apps = []
-
-        while True:
-            app = inquirer.text(message="Enter the name for the App: ")
-            
-            command: bool = False
-
-            if command and inquirer.confirm(message=f"Want to use app {app}?"):
-                apps.append(app)
-
-            if not inquirer.confirm(message="Want to add more Apps?"):
-                return apps
-
-    @yaspin(text=" Finding Application...")
-    def __find_app_windows(self, app_name: str) -> list:
-        try:
-            file = subprocess.run(["powershell.exe", "-c", 'Get-StartApps | Where-Object {{ $_.Name -like "{}" }}'.format(app_name)], capture_output=True)
-            app = file.stdout.decode().replace("\r\n","").split(" ")[-1]
-            if app:
-                return ["powershell.exe", "-c", 'Start-Process Shell:AppsFolder\\{}'.format(app)]
-            else:
-                print()
-                return None
-        except:
-            print()
-            return None
-
-    @yaspin(text=" Finding Application...")
-    def __find_app_macos(self, app_name: str):
-        try:
-            result = subprocess.run(['ls', '/Applications'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            apps = [line for line in result.stdout.splitlines() if app_name.lower() in line.lower()]
-            if apps:
-                return ['open', f"/Applications/{apps[0]}"]
-            else:
-                print()
-                return None
-        except:
-            print()
-            return None
-
-    @yaspin(text=" Finding Application...")
-    def __find_app_linux(self, app_name: str):
-        try:
-            result = subprocess.run(['which', app_name], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            app_path = result.stdout.strip()
-            if app_path:
-                return [app_path]
-            else:
-                print()
-                return None
-        except:
-            print()
-            return None
+    
 
     # GET USER INPUT API KEY AND CHECK IF ITS VALID
     def __get_api_key(self) -> str:
