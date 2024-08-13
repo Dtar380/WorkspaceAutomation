@@ -3,23 +3,22 @@
 ########################################
 
 '''
-
+This script is used to set-up the application.
 '''
 
 ########################################
 #####  IMPORTING MODULES           #####
 ########################################
 
+##### EXTERNAL IMPORTS
 # FILE MANAGEMENT
 from os import mkdir
 from cryptography.fernet import Fernet
-from .common import key_generator
 import json
 
 # ENV MANAGEMENT
 from pathlib import Path
 from platform import system
-import subprocess
 from os import path, listdir
 
 # API CHECKER
@@ -28,19 +27,43 @@ from requests import get
 # CLI
 import inquirer
 from yaspin import yaspin
-from .common import clear
+
+##### INTERNAL IMPORTS
+# ERRORS
+from .__errors__ import *
+
+# REUSABLE FUNCTIONS
+from .common import key_generator, clear
+
+########################################
+#####  GLOBAL VARIABLES            #####
+########################################
+
+from .__vars__ import settings_paths, code_paths
 
 ########################################
 #####  CODE                        #####
 ########################################
 
-##### GLOBAL VARIABLES
-from .__vars__ import settings_paths, code_paths
-
 #####  CLASS
 class SetUp:
 
+    """
+    The SetUp class contains all functions related with the setup command.<br>
+    This command should only be run once every installation performed.
+    """
+
+    ##### INITIALISE CLASS
     def __init__(self, custom_directory: str = None) -> None:
+
+        """
+        ## Class Initialization
+
+        Parameters
+        ----------
+        custom_directory: str, optional
+            Custom directory path where folders will be created. Defaults to Documents directory.
+        """
 
         clear(0)
         if not path.exists(settings_paths[system()]):
@@ -81,9 +104,23 @@ class SetUp:
         clear(0.5)
         exit()
 
-    # CHECK IF OS IS COMPATIBLE
     @yaspin(text=" Checking compatibility...")
     def __check_compatibility(self) -> str:
+
+        """
+        Checks the compatibility of the operating system with the application.
+
+        Returns
+        -------
+        OS: str
+            The name of the operating system.
+
+        Raises
+        ------
+        NotCompatibleOS: Exception 
+            Raised if the operating system is not compatible.
+        """
+
         if system() == "Linux":
             return "Linux"
         elif system() == "Darwin":
@@ -91,11 +128,21 @@ class SetUp:
         elif system() == "Windows":
             return "Windows"
         else:
-            raise Exception("Not compatible Operating System")
+            raise NotCompatibleOS("Not compatible Operating System.")
 
-    # FUNCTIONS RELATED WITH PATHS FOR THE APP
+    ##### FOLDER RELATED
     @yaspin(text=" Listing folders in Documents...")
     def __get_folders(self) -> list:
+        
+        """
+        Get Folders
+
+        Returns
+        -------
+        Folders: list
+            A list of folder names in lowercase.
+        """
+
         return [i.lower() for i in listdir(self.directory) if "." not in i]
 
     def __select_folders(self) -> list:
@@ -113,6 +160,7 @@ class SetUp:
         return answer["folders"]
 
     def __ask_folders(self) -> list:
+        
         folders = []
 
         while True:
@@ -124,11 +172,22 @@ class SetUp:
 
     @yaspin(text=" Creating the folders...")
     def __create_folders(self) -> None:
+        
         for i in self.sub_directories:
             mkdir(path.join(self.directory, i))
 
-    # FUNCTIONS FOR GETTING GH USERNAME
+    # Ask for GitHub username
     def __get_github_username(self) -> str:
+
+        """
+        ## Get GitHub Username
+        
+        Returns
+        --------
+        Username: str
+            The GitHub username if it is valid.
+        """
+
         while True:
             user_name = inquirer.text(message="Enter your GitHub username")
             response = get(f"https://github.com/{user_name}")
@@ -137,8 +196,18 @@ class SetUp:
             else:
                 return user_name
 
-    # FUNCTION FOR SELECTING LANGS USED BY USER
+    # Get the languages user uses
     def __select_languages(self) -> list:
+
+        """
+        ## Select Language
+        
+        Returns
+        --------
+        Languages: list
+            A list of selected programming languages.
+        """
+
         question = [inquirer.Checkbox(
             name = "languages",
             message = "Select the languages you use",
@@ -147,11 +216,18 @@ class SetUp:
         answer = inquirer.prompt(question)
         return answer["languages"]
 
-    # FUNCTIONS RELATED WITH APP SELECTION
-    
-
-    # GET USER INPUT API KEY AND CHECK IF ITS VALID
+    # Ask for the API KEY and check if its valid
     def __get_api_key(self) -> str:
+        
+        """
+        ## Get API KEY
+        
+        Returns
+        --------
+        key: str 
+            The verified GitHub API key.
+        """
+
         while True:
             key = inquirer.text(message="Input you GitHub API Key")
             
@@ -169,7 +245,6 @@ class SetUp:
             else:
                 print(f"An error occurred please retry (ERROR CODE: {response.status_code})\n\n")
 
-    # SAVE SETTINGS TO THE SETTINGS FILE
     @yaspin(text=" Saving settings...")
     def __save_settings(self) -> None:
 
