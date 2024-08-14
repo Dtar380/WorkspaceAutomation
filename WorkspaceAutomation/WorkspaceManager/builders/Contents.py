@@ -1,12 +1,4 @@
 ########################################
-#####  DOCUMENTATION               #####
-########################################
-
-'''
-
-'''
-
-########################################
 #####  IMPORTING MODULES           #####
 ########################################
 
@@ -21,7 +13,7 @@ from shutil import rmtree
 ########################################
 
 #####  GLOBAL VARIABLES
-from ..__vars__ import settings_paths
+from ...__vars__ import settings_paths
 
 # MOVE TO SETTINGS PATH
 MAIN_DIRECTORY = settings_paths[system()]

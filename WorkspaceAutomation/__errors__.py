@@ -1,12 +1,4 @@
 ########################################
-#####  DOCUMENTATION               #####
-########################################
-
-'''
-
-'''
-
-########################################
 #####  CODE                        #####
 ########################################
 
@@ -19,6 +11,7 @@ class WorkSpaceAlreadyExists(Exception): ...
 class CommandNotFound(Exception): ...
 class PasswordError(Exception): ...
 class NotCompatibleOS(Exception): ...
+class DoubleSetUp(Exception): ...
 
 #####  RUN FILE
 if __name__ == "__main__":

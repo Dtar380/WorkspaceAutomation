@@ -1,12 +1,4 @@
 ########################################
-#####  DOCUMENTATION               #####
-########################################
-
-'''
-
-'''
-
-########################################
 #####  IMPORTING MODULES           #####
 ########################################
 
@@ -22,7 +14,7 @@ from os.path import join, exists
 ########################################
 
 #####  GLOBAL VARIABLES
-from ..__vars__ import settings_paths
+from ...__vars__ import settings_paths
 GITHUB_API = "https://api.github.com"
 
 # MOVE TO SETTINGS PATH
@@ -31,7 +23,7 @@ MAIN_DIRECTORY = settings_paths[system()]
 #####  CLASS
 class Github:
 
-    def __init__(self, action: int, clone: bool, API_KEY: str, directory: str, name:str, owner: str, **kwargs) -> None:
+    def __init__(self, action: int, clone: bool, API_KEY: str, name:str, owner: str, directory: str, **kwargs) -> None:
         
         self.headers = {
         "Authorization": "Bearer " +  API_KEY,
