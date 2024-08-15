@@ -22,3 +22,16 @@ code_paths = {
     "Darwin": str(Path.home()) + "\\Library\\Application\\ Support\\{}\\User\\globalStorage\\storage.json",
     "Linux": str(Path.home()) + "\\.config\\{}\\User\\globalStorage\\storage.json"
 }
+
+languages = {
+    "Python": {
+        "gitignore": "",
+        "directories": [
+
+        ],
+        "files": [
+
+        ],
+        "venv-command": ""
+    },
+}

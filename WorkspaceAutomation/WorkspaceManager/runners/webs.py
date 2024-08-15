@@ -3,20 +3,17 @@
 ########################################
 
 #####  EXTERNAL IMPORTS
-
-
-#####  INTERNAL IMPORTS
-
+# OPENING URLS
+import webbrowser
+import time
 
 ########################################
-#####  CODE                        #####
+#####  FUNCTION                    #####
 ########################################
 
-#####  GLOBAL VARIABLES
+# OPENS ALL URLS
+def open_urls(urls) -> None:
 
-
-#####  CLASS
-class WebsManager:
-
-    def __init__(self) -> None:
-        pass
+    for url in urls:
+        webbrowser.open(url)
+        time.sleep(0.5)

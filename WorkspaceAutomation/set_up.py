@@ -19,6 +19,9 @@ from .Config import ConfigFunctions
 
 from .__vars__ import settings_paths
 
+##### DEFINE MAIN DIRECTORY ACCORDING TO OPERATING SYSTEM
+MAIN_DIRECTORY = settings_paths[os.system()]
+
 ########################################
 #####  CLASS                       #####
 ########################################
@@ -32,10 +35,10 @@ class SetUp:
         self.__check_compatibility()
 
         # Check if a setup has already been performed
-        if os.path.exists(settings_paths[os.system()]):
-            raise DoubleSetUp("Cannot re-setup, maybe you rather run 'config --sub-command' command.")
+        if os.path.exists(MAIN_DIRECTORY):
+            raise Exception("Cannot re-setup, maybe you rather run 'config --sub-command' command.")
         else:
-            os.makedirs(settings_paths[os.system()], exist_ok=True)
+            os.makedirs(MAIN_DIRECTORY, exist_ok=True)
 
         config = ConfigFunctions(command="set-up", kwargs=kwargs)
 
@@ -59,11 +62,13 @@ class SetUp:
 
     # Checks for the OS of the user
     def __check_compatibility(self) -> str:
+
         if os.system() == "Linux":
             return None
         elif os.system() == "Darwin":
             return None
         elif os.system() == "Windows":
             return None
+        
         else:
             raise NotCompatibleOS("Not compatible Operating System.")

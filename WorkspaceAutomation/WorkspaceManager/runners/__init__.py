@@ -3,5 +3,5 @@
 ########################################
 
 #####  INTERNAL IMPORTS
-from .apps import AppsManager
-from .webs import WebsManager
+from .apps import run_apps
+from .webs import open_urls

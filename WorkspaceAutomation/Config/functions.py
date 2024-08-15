@@ -28,7 +28,15 @@ from ..common import key_generator, clear
 ########################################
 
 ##### IMPORT GLOBAL VARIABLES FROM FILE
-from ..__vars__ import code_paths, settings_paths
+from ..__vars__ import code_paths, settings_paths, languages
+
+##### DEFINE MAIN DIRECTORY ACCORDING TO OPERATING SYSTEM
+MAIN_DIRECTORY = settings_paths[os.system()]
+
+##### DEFINE MAIN FILES DIRECTORIES
+WORKSPACES = os.path.join(MAIN_DIRECTORY, "workspaces.json")
+SETTINGS = os.path.join(MAIN_DIRECTORY, "settings.json")
+SECRETS = os.path.join(MAIN_DIRECTORY, ".secrets")
 
 ########################################
 #####  CLASS                       #####
@@ -50,11 +58,11 @@ class ConfigFunctions:
         self.yes = yes
 
         commands = {
-                "vscode": self.vscode_type,
-                "languages": self.select_languages,
-                "folders": self.select_folders,
-                "api-key": self.get_api_key,
-                "git-user": self.get_github_username
+            "vscode": self.vscode_type,
+            "languages": self.select_languages,
+            "folders": self.select_folders,
+            "api-key": self.get_api_key,
+            "git-user": self.get_github_username
         }
 
         if command == "set-up":
@@ -96,8 +104,7 @@ class ConfigFunctions:
     # Select the most used languages by the user
     def select_languages(self, **kwargs) -> list:
 
-        with open("resources/languages.json", "r+") as f:
-            all_languages = json.load(f).keys()
+        all_languages = languages.keys()
 
         selected_languages = self.settings["languages"] or kwargs.get("selected-languages") or None
 
@@ -105,8 +112,7 @@ class ConfigFunctions:
             name = "languages",
             message = "Select the languages you use",
             choices = all_languages,
-            default = selected_languages
-            )
+            default = selected_languages)
         
         if not inquirer.confirm("Want to save changes?") and not self.yes:
             print("Exiting...")
@@ -121,21 +127,25 @@ class ConfigFunctions:
         main_dir = kwargs.get("custom-dir") or Path(Path.joinpath(Path.home(), "Documents"))
         create = kwargs.get("create") or inquirer.confirm("", default=False)
 
+        if not os.path.exists(main_dir):
+            raise DirectoryNotFound("Specified directory was not found")
+
         folders = [i.lower() for i in os.listdir(main_dir) if "." not in i]
         
         if folders and not create:
             sub_directories = self.__select_folders(folders=folders)
+        
         else:
             sub_directories = self.__ask_folders()
             self.__create_folders(
                 main_dir=main_dir,
-                sub_directories=sub_directories
-                )
+                sub_directories=sub_directories)
         
         return main_dir, sub_directories
     
     # Get user selected folders
     def __select_folders(self, folders) -> list:
+        
         if "github" in folders:
             default = ["github"]
 
@@ -238,12 +248,12 @@ class ConfigFunctions:
 
         settings_path = settings_paths[os.system()]
 
-        with open(os.path.join(settings_path, "settings.json"), "w+") as f:
+        with open(SETTINGS, "w+") as f:
             json.dump(settings, f)
 
         if not os.path.exists(os.path.join(settings_path,)):
-            with open(os.path.join(settings_path, "workspaces.json"), "w+") as f:
+            with open(WORKSPACES, "w+") as f:
                 pass
 
-        with open(os.path.join(settings_path, ".secrets"), "w+") as f:
+        with open(SECRETS, "w+") as f:
             f.write(f'API_KEY = "{api_key}"')

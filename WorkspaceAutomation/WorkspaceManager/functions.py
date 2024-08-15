@@ -21,22 +21,25 @@ from ..__errors__ import *
 from shared_menus import SharedMenus
 
 # BUILDERS
-from .builders.github import Github
-from .builders.Contents import ContentsManager
+from .builders import Github
+from .builders import ContentsManager
 
 # RUNNERS
-from .runners.apps import AppsManager
-from .runners.webs import WebsManager
+from .runners import run_apps
+from .runners import open_urls
 
 ########################################
 #####  GLOBAL VARIABLES            #####
 ########################################
 
 ##### IMPORT GLOBAL VARIABLES FROM FILE
-from ..__vars__ import settings_paths
+from ..__vars__ import settings_paths, languages
 
 ##### DEFINE MAIN DIRECTORY ACCORDING TO OPERATING SYSTEM
 MAIN_DIRECTORY = settings_paths[os.system()]
+
+##### DEFINE MAIN FILES DIRECTORIES
+WORKSPACES = os.path.join(MAIN_DIRECTORY, "workspaces.json")
 
 ########################################
 #####  CLASS                       #####
@@ -67,6 +70,7 @@ class WorkspaceFunctions:
             "edit": self.edit_workspace,
         }
 
+        # Run selected command
         commands[command](**kwargs)
 
     ##### WORKSPACE FUNCTIONS
@@ -98,6 +102,13 @@ class WorkspaceFunctions:
                 license=license,
                 language=language
             )
+
+        ContentsManager(
+            action=1,
+            directory=directory,
+            name=name,
+            language=language
+        )
 
         apps = SharedMenus.select_apps()
         urls = SharedMenus.select_urls()
@@ -153,7 +164,7 @@ class WorkspaceFunctions:
     # Delete an existing WorkSpace
     def delete_workspace(self, **kwargs) -> None:
 
-        with open(os.path.join(MAIN_DIRECTORY, "workspaces.json"), "r+") as f:
+        with open(WORKSPACES, "r+") as f:
             data = json.load(f)
 
         name = kwargs.get("name") or inquirer.text("Introduce el nombre del proyecto")
@@ -177,41 +188,46 @@ class WorkspaceFunctions:
             owner=owner,
             directory=directory)
         
-        ContentsManager()
+        ContentsManager(
+            actions=2,
+            directory=directory,
+            name=name
+        )
 
-        with open(os.path.join(MAIN_DIRECTORY, "workspaces.json"), "w") as f:
+        with open(WORKSPACES, "w+") as f:
             json.dump(data, f)
 
     # Open VSCode, APPs and URLs associated to a WorkSpace
     def open_workspace(self, **kwargs) -> None:
 
-        with open(os.path.join(MAIN_DIRECTORY, "workspaces.json"), "r") as f:
+        with open(WORKSPACES, "r+") as f:
             data = json.load(f)
 
         name = kwargs.get("name") or inquirer.text("Introduce el nombre del proyecto")
-        if name not in data:
+        if name not in data.keys():
             raise WorkSpaceNotFound("No se encontró el workspace con ese nombre.")
 
         directory = data[name]["directory"]
         profile = SharedMenus.select_vscode_profile(vscode_settings=self.settings["vscode"]["path"])
 
-        apps = data[name]["apps"].items()
+        apps = data[name]["apps"].values()
         urls = data[name]["urls"]
 
-        AppsManager()
-        WebsManager()
+        # RUNNERS
+        run_apps(directory=directory, apps=apps, profile=profile)
+        open_urls(urls=urls)
 
     # Publish a WorkSpace to GitHub
     def publish_workspace(self, **kwargs) -> None:
 
-        with open(os.path.join(MAIN_DIRECTORY, "workspaces.json"), "r") as f:
+        with open(WORKSPACES, "r+") as f:
             data = json.load(f)
 
         name = kwargs.get("name") or inquirer.text("Introduce el nombre del proyecto")
         owner = kwargs.get("owner") or inquirer.list_input("¿Quién es el propietario del repositorio?")
         private = kwargs.get("private") or "true" if inquirer.confirm("¿El repositorio es privado?", default=False) else "false"
 
-        if name not in data:
+        if name not in data.keys():
             raise WorkSpaceNotFound("No se encontró el workspace con ese nombre.")
 
         self.__create_github_repo(
@@ -226,7 +242,7 @@ class WorkspaceFunctions:
         data[name]["owner"] = owner
         data[name]["private"] = private
 
-        with open(os.path.join(MAIN_DIRECTORY, "workspaces.json"), "w") as f:
+        with open(WORKSPACES, "w+") as f:
             json.dump(data, f)
 
     # Move an existing WorkSpace to another Path
@@ -237,39 +253,51 @@ class WorkspaceFunctions:
             kwargs=kwargs
         )
 
+        with open(WORKSPACES, "r+") as f:
+            data = json.load(f)
+
+        if name not in data.keys():
+            raise WorkSpaceNotFound("No se encontró el workspace con ese nombre.")
+
         if not inquirer.confirm(f"Want to move the workspace {name}?") and not self.yes:
             print("Exiting...")
             return None
 
-        ContentsManager()
-
-        with open(os.path.join(MAIN_DIRECTORY, "workspaces.json"), "r+") as f:
-            data = json.load(f)
+        ContentsManager(
+            action=1,
+            directory=data[name]["directory"],
+            name=name,
+            new_directory=new_directory
+        )
 
         data[name]["directory"] = os.path.join(new_directory, name)
 
-        with open(os.path.join(MAIN_DIRECTORY, "workspace.json"), "w") as f:
+        with open(WORKSPACES, "w+") as f:
             json.dump(data, f)
 
     # Edit the information of an existing repo
     def edit_workspace(self, **kwargs) -> None:
 
-        with open(os.path.join(MAIN_DIRECTORY, "workspace.json"), "r+") as f:
+        with open(WORKSPACES, "r+") as f:
             data = json.load(f)
 
+        # ADD APPS TO WORKSPACE
         if kwargs.get("add-apps"):
             apps = SharedMenus.select_apps()
             data["apps"] += apps
 
+        # REMOVE APPS FROM WORKSPACE
         if kwargs.get("del-apps"):
             apps_to_delete = inquirer.Checkbox("apps", message="Selecciona las aplicaciones a eliminar.", choices=data["apps"].keys())
             for app in inquirer.prompt([apps_to_delete])["apps"]:
                 del data["apps"][app]
 
+        # ADD URLS TO WORKSPACE
         if kwargs.get("add-urls"):
             urls = SharedMenus.select_urls()
             data["urls"].extend(urls)
-            
+
+        # DELETE URLS FROM WORKSPACE
         if kwargs.get("del-urls"):
             urls_to_delete = inquirer.Checkbox("urls", message="Selecciona las URLs a eliminar.", choices=data["urls"])
             for url in inquirer.prompt([urls_to_delete])["urls"]:
@@ -279,7 +307,7 @@ class WorkspaceFunctions:
             print("Exiting...")
             return None
         
-        with open(os.path.join(MAIN_DIRECTORY, "workspace.json"), "r+") as f:
+        with open(WORKSPACES, "r+") as f:
             data = json.dump(data, f)
 
     # Save a WorkSpace thats being currently editted
@@ -299,7 +327,7 @@ class WorkspaceFunctions:
         spinner = yaspin(text=" Saving the WorkSpace...")
         spinner.start()
 
-        with open(os.path.join(MAIN_DIRECTORY, "workspaces.json"), "r+") as f:
+        with open(WORKSPACES, "r+") as f:
             data = json.load(f)
 
         data[name] = {
@@ -310,7 +338,7 @@ class WorkspaceFunctions:
             "private": private
         }
 
-        with open(os.path.join(MAIN_DIRECTORY, "workspaces.json"), "w") as f:
+        with open(WORKSPACES, "w+") as f:
             json.dump(data, f)
 
         spinner.stop()
@@ -331,6 +359,8 @@ class WorkspaceFunctions:
             print("Exiting...")
             return None
 
+        gitignore = languages[language] or None
+
         action = 0 if owner == self.settings["git-user"] else 1
 
         github = Github(
@@ -343,7 +373,7 @@ class WorkspaceFunctions:
             private=private,
             auto_init=auto_init,
             license=license,
-            language=language
+            gitignore=gitignore
         )
 
         github.push_user_repo()

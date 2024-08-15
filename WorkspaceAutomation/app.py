@@ -31,7 +31,10 @@ from .__vars__ import settings_paths
 
 ##### DEFINE MAIN DIRECTORY ACCORDING TO OPERATING SYSTEM
 MAIN_DIRECTORY = settings_paths[os.system()]
-os.chdir(MAIN_DIRECTORY)  # Change CWD
+
+##### DEFINE MAIN FILES DIRECTORIES
+SETTINGS = os.path.join(MAIN_DIRECTORY, "settings.json")
+SECRETS = os.path.join(MAIN_DIRECTORY, ".secrets")
 
 ########################################
 #####  CLASS                       #####
@@ -72,10 +75,10 @@ class App:
             "git-user"
         ]
 
+        # Check if the given command exists
         if command not in commands:
             raise CommandNotFound("The given command was not found or not given")
 
-        # Ejecutar el comando seleccionado
         if command == "main":
             WorkspaceFunctions(
                 command=command,
@@ -85,11 +88,12 @@ class App:
                 kwargs=kwargs
             )
 
+        # Check if the given subcommand exists
         elif sub_command not in sub_commands:
             raise CommandNotFound("The given subcommand was not found or not given")
         
         else:
-            with open(os.path.join(MAIN_DIRECTORY, "settings.json"), "r+") as f:
+            with open(SETTINGS, "r+") as f:
                 settings = json.load(f)
 
             config = ConfigFunctions(
@@ -104,26 +108,27 @@ class App:
 
             settings[sub_command] = change
 
-            with open(os.path.join(MAIN_DIRECTORY, "settings.json"), "r+") as f:
+            with open(SETTINGS, "r+") as f:
                 json.dump(settings, f)
 
     # Get saved API_KEY
     def __load_env_variables(self) -> None:
 
         try:
-            load_dotenv(".secrets")
+            load_dotenv(SECRETS)
             encrypted_key = os.getenv("API_KEY")
             self.API_KEY = Fernet(key_generator(self.key)).decrypt(encrypted_key).decode()
         except FileNotFoundError:
             raise FileNotFoundError(".secrets file was not found")
+        
         else:
             raise PasswordError("Password is incorrect, API KEY could not get decrypted")
 
     # Get saved settings
     def __load_settings(self) -> None:
 
-        if not os.path.exists("settings.json"):
+        if not os.path.exists(SETTINGS):
             raise FileNotFoundError("Settings file was not found")
 
-        with open("settings.json", "r") as f:
+        with open(SETTINGS, "r+") as f:
             self.settings = json.load(f)

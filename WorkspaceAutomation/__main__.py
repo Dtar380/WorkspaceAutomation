@@ -23,4 +23,4 @@ class Renderer:
 
 #####  RUN FILE
 if __name__ == "__main__":
-    pass
+    Renderer()

@@ -160,7 +160,7 @@ class SharedMenus:
     @classmethod
     def select_vscode_profile(cls, vscode_settings: str) -> str:
 
-        with open(vscode_settings) as f:
+        with open(vscode_settings, "r+") as f:
             profiles = json.load(f)["userDataProfiles"]
 
         profile_names = [profile["name"] for profile in profiles]

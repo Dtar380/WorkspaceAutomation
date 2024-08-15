@@ -3,30 +3,43 @@
 ########################################
 
 #####  EXTERNAL IMPORTS
-from yaspin import yaspin
+# ENV MANAGEMENT
+import os
+
+# HTTP REQUESTS
 import requests
-import subprocess
-from os import chdir, system
-from os.path import join, exists
+
+# CLI
+from yaspin import yaspin
+
+##### INTERNAL IMPORTS
+# ERRORS
+from ...__errors__ import *
 
 ########################################
-#####  CODE                        #####
+#####  GLOBAL VARIABLES            #####
 ########################################
 
-#####  GLOBAL VARIABLES
+##### IMPORT GLOBAL VARIABLES FROM FILE
 from ...__vars__ import settings_paths
-GITHUB_API = "https://api.github.com"
 
-# MOVE TO SETTINGS PATH
-MAIN_DIRECTORY = settings_paths[system()]
+GITHUB_API = "https://api.github.com" # GitHub API URL
 
-#####  CLASS
+##### DEFINE MAIN DIRECTORY
+MAIN_DIRECTORY = settings_paths[os.system()]
+
+########################################
+#####  CLASS                       #####
+########################################
+
 class Github:
 
     def __init__(self, action: int, clone: bool, API_KEY: str, name:str, owner: str, directory: str, **kwargs) -> None:
         
+        self.TOKEN = API_KEY
+
         self.headers = {
-        "Authorization": "Bearer " +  API_KEY,
+        "Authorization": "Bearer " +  self.TOKEN,
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28"
         }
@@ -39,13 +52,12 @@ class Github:
 
         if kwargs:
             try:
-                private = kwargs["private"]
-                auto_init = kwargs["auto_init"]
-                if auto_init == "true":
-                    gitignore = kwargs["gitignore"]
-                    license = kwargs["license"]
+                private = kwargs.get("private")
+                auto_init = kwargs.get("auto_init")
+                gitignore = kwargs.get("gitignore") if auto_init == "true" else None
+                license = kwargs.get("license") if auto_init == "true" else None
             except:
-                raise Exception("Missing arguments")
+                raise MissingArgs("There are missing arguments, please re-run the command")
         
         self.directory = directory
         self.owner = owner
@@ -57,6 +69,7 @@ class Github:
             else:
                 payload = '{"name":"' + self.name + '","private":' + private + ',"auto_init":' + auto_init + '"}'
             functions[action](payload)
+        
         elif action == 2:
             functions[action]()
         
@@ -65,8 +78,6 @@ class Github:
             
     @yaspin(text="Creating GitHub Repository...")
     def __create_user_repo(self, payload) -> None:
-        print(payload)
-        print(self.headers)
         requests.post(GITHUB_API+"/user/repos", data=payload, headers=self.headers)
 
     @yaspin(text="Creating GitHub Repository...")
@@ -79,19 +90,20 @@ class Github:
 
     @yaspin(text="Cloning GitHub Repository...")
     def __clone_repo(self) -> None:
-        chdir(join(self.directory, self.name))
+        os.chdir(os.path.join(self.directory, self.name))
         url = f"https://github.com/{self.owner}/{self.name}.git"
-        system("git clone" + url)
-        chdir(MAIN_DIRECTORY)
+        os.system("git clone" + url)
+        os.chdir(MAIN_DIRECTORY)
 
     @yaspin(text="Pushing project to github")
     def push_user_repo(self) -> None:
-        chdir(join(self.directory, self.name))
+        os.chdir(os.path.join(self.directory, self.name))
 
-        if not exists("README.md"):
-            system('ECHO #' + self.name + ' >> README.md')
-        system("git init")
-        system("git add . && git commit -m 'Initial Commit' && git branch -M main")
-        system(f"git remote add origin http://{self.TOKEN}@github.com/{self.owner}/{self.name}.git")
-        system("git push -u origin main")
-        chdir(MAIN_DIRECTORY)
+        if not os.path.exists("README.md"):
+            os.system('ECHO #' + self.name + ' >> README.md')
+        
+        os.system("git init")
+        os.system("git add . && git commit -m 'Initial Commit' && git branch -M main")
+        os.system(f"git remote add origin http://{self.TOKEN}@github.com/{self.owner}/{self.name}.git")
+        os.system("git push -u origin main")
+        os.chdir(MAIN_DIRECTORY)
