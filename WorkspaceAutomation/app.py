@@ -10,6 +10,7 @@ import json
 
 # ENV MANAGEMENT
 import os
+import platform
 
 ##### INTERNAL IMPORTS
 # ERRORS
@@ -30,7 +31,7 @@ from .common import key_generator
 from .__vars__ import settings_paths
 
 ##### DEFINE MAIN DIRECTORY ACCORDING TO OPERATING SYSTEM
-MAIN_DIRECTORY = settings_paths[os.system()]
+MAIN_DIRECTORY = settings_paths[platform.system()]
 
 ##### DEFINE MAIN FILES DIRECTORIES
 SETTINGS = os.path.join(MAIN_DIRECTORY, "settings.json")
@@ -44,8 +45,8 @@ class App:
 
     ##### INITIALISE CLASS
     def __init__(self,
-        command: str,
         key: str,
+        command: str,
         sub_command: str = None,
         **kwargs) -> None:
 
@@ -53,7 +54,10 @@ class App:
         self.key = key
         self.__load_env_variables()
         self.__load_settings()
-        
+
+        with open(SETTINGS, "r+", encoding="utf-8") as f:
+            self.settings = json.load(f)
+
         # Accepted commands
         commands = [
             "create",
@@ -75,11 +79,8 @@ class App:
             "git-user"
         ]
 
-        # Check if the given command exists
-        if command not in commands:
-            raise CommandNotFound("The given command was not found or not given")
-
-        if command == "main":
+        # Check if the command is a non-config command
+        if command in commands.remove("config"):
             WorkspaceFunctions(
                 command=command,
                 api_key=self.API_KEY,
@@ -88,28 +89,32 @@ class App:
                 kwargs=kwargs
             )
 
-        # Check if the given subcommand exists
-        elif sub_command not in sub_commands:
-            raise CommandNotFound("The given subcommand was not found or not given")
-        
-        else:
-            with open(SETTINGS, "r+") as f:
-                settings = json.load(f)
+        # Check for a sub-command for the config command
+        elif command == "config" and sub_command in sub_commands:
 
             config = ConfigFunctions(
                 command=command,
                 sub_command=sub_commands,
-                settings=settings,
+                settings=self.settings,
                 yes=self.yes,
                 kwargs=kwargs
             )
 
             change = config.parameter
 
-            settings[sub_command] = change
+        if sub_command == "api-key":
+            with open(SECRETS, "w+") as f:
+                f.write(f'API_KEY = "{change.decode()}"')
 
-            with open(SETTINGS, "r+") as f:
-                json.dump(settings, f)
+        elif sub_command:
+            self.settings[sub_command] = change
+
+            with open(SETTINGS, "w+") as f:
+                json.dump(self.settings, f)
+
+        # The command given was incomplete or incorrect
+        else:
+            raise CommandNotFound("The given command was not found or not given")
 
     # Get saved API_KEY
     def __load_env_variables(self) -> None:
@@ -120,7 +125,7 @@ class App:
             self.API_KEY = Fernet(key_generator(self.key)).decrypt(encrypted_key).decode()
         except FileNotFoundError:
             raise FileNotFoundError(".secrets file was not found")
-        
+
         else:
             raise PasswordError("Password is incorrect, API KEY could not get decrypted")
 

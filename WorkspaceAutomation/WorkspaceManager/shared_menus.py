@@ -9,6 +9,7 @@ import json
 # ENV MANAGEMENT
 import subprocess
 import os
+import platform
 
 # URL REQUESTS
 import requests
@@ -49,7 +50,7 @@ class SharedMenus:
 
         owner = kwargs.get("owner") or inquirer.text("Introduce el propietario del repositorio:")
         private = kwargs.get("private") or "true" if inquirer.confirm("¿El repositorio es privado?", default=False) else "false"
-         
+
         if get_license:
             license = kwargs.get("license") or inquirer.list_input("Introduce la licencia:", choices=["MIT", "GPL-3.0", "Unlicense"])
         else:
@@ -82,7 +83,7 @@ class SharedMenus:
         while True:
             app = inquirer.text(message="Enter the name for the App:")
 
-            command = command_generators[os.system()](app)
+            command = command_generators[platform.system()](app)
 
             if not command:
                 print(f"The App '{app}' Was not found")
@@ -95,46 +96,46 @@ class SharedMenus:
     # Find APPs in each supported OS
     @yaspin(text=" Finding Application...")
     def __find_app_windows(self, app_name: str) -> list:
-        
+
         try:
             file = subprocess.run(["powershell.exe", "-c", 'Get-StartApps | Where-Object {{ $_.Name -like "{}" }}'.format(app_name)], capture_output=True)
             app = file.stdout.decode().replace("\r\n","").split(" ")[-1]
-            
+
             if app:
                 return ["powershell.exe", "-c", 'Start-Process Shell:AppsFolder\\{}'.format(app)]
             else:
                 return None
-        
+
         except:
             return None
 
     @yaspin(text=" Finding Application...")
     def __find_app_macos(self, app_name: str):
-        
+
         try:
             result = subprocess.run(['ls', '/Applications'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             apps = [line for line in result.stdout.splitlines() if app_name.lower() in line.lower()]
-            
+
             if apps:
                 return ['open', f"/Applications/{apps[0]}"]
             else:
                 return None
-            
+
         except:
             return None
 
     @yaspin(text=" Finding Application...")
     def __find_app_linux(self, app_name: str):
-        
+
         try:
             result = subprocess.run(['which', app_name], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             app_path = result.stdout.strip()
-            
+
             if app_path:
                 return [app_path]
             else:
                 return None
-            
+
         except:
             return None
 

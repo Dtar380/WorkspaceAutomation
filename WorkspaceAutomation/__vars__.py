@@ -11,9 +11,9 @@ from pathlib import Path
 #####  GLOBAL VARIABLES
 # Path to settings
 settings_paths = {
-    "Windows": str(Path.home()) + f"\\AppData\\Roaming\\WorkSpaceAutomation",
-    "Darwin": str(Path.home()) + f"\\Library\\Application\\ Support\\WorkSpaceAutomation",
-    "Linux": str(Path.home()) + f"\\.config\\WorkSpaceAutomation"
+    "Windows": str(Path.home()) + "\\AppData\\Roaming\\WorkSpaceAutomation",
+    "Darwin": str(Path.home()) + "\\Library\\Application\\ Support\\WorkSpaceAutomation",
+    "Linux": str(Path.home()) + "\\.config\\WorkSpaceAutomation"
 }
 
 # Path to vscode settings

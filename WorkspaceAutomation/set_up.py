@@ -5,6 +5,7 @@
 ##### EXTERNAL IMPORTS
 # ENV AND PATHS
 import os
+import platform
 
 ##### INTERNAL IMPORTS
 # ERRORS
@@ -20,7 +21,7 @@ from .Config import ConfigFunctions
 from .__vars__ import settings_paths
 
 ##### DEFINE MAIN DIRECTORY ACCORDING TO OPERATING SYSTEM
-MAIN_DIRECTORY = settings_paths[os.system()]
+MAIN_DIRECTORY = settings_paths[platform.system()]
 
 ########################################
 #####  CLASS                       #####
@@ -29,7 +30,9 @@ MAIN_DIRECTORY = settings_paths[os.system()]
 class SetUp:
 
     ##### INITIALISE CLASS
-    def __init__(self, **kwargs) -> None:
+    def __init__(self,
+        key: str,
+        **kwargs) -> None:
 
         # OS of the user
         self.__check_compatibility()
@@ -40,7 +43,9 @@ class SetUp:
         else:
             os.makedirs(MAIN_DIRECTORY, exist_ok=True)
 
-        config = ConfigFunctions(command="set-up", kwargs=kwargs)
+        config = ConfigFunctions(key=key,
+            command="init",
+            kwargs=kwargs)
 
         # Variables related to settings.json
         self.folders = config.folders
@@ -61,14 +66,16 @@ class SetUp:
         )
 
     # Checks for the OS of the user
-    def __check_compatibility(self) -> str:
+    def __check_compatibility(self) -> None:
 
-        if os.system() == "Linux":
+        # Accepted OS
+        if platform.system() == "Linux":
             return None
-        elif os.system() == "Darwin":
+        elif platform.system() == "Darwin":
             return None
-        elif os.system() == "Windows":
+        elif platform.system() == "Windows":
             return None
-        
+
+        # OS was not accepted
         else:
             raise NotCompatibleOS("Not compatible Operating System.")

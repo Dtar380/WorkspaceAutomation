@@ -15,10 +15,10 @@ import os
 
 #####  FUNCTIONS
 # Clear the screen
-def clear(t: int):
+def clear(t: float):
     os.system('cls' if os.name == 'nt' else 'clear')
     sleep(t)
 
 # Generate a hashlib key for the Fernet class
-def key_generator(input: str):
-    return base64.urlsafe_b64encode(hashlib.md5(input.encode()).hexdigest().encode())
+def key_generator(key: str):
+    return base64.urlsafe_b64encode(hashlib.md5(key.encode()).hexdigest().encode())

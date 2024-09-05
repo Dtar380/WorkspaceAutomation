@@ -86,10 +86,11 @@ class WorkspaceFunctions:
 
         if name in os.listdir(directory):
             raise WorkSpaceAlreadyExists("This name is already being used")
-        
+
         if github:
             owner, private, license = SharedMenus.get_github_info(
-                get_license=True
+                get_license=True,
+                kwargs=kwargs
             )
 
             self.__create_github_repo(
@@ -134,10 +135,11 @@ class WorkspaceFunctions:
 
         if name in os.listdir(directory):
             raise WorkSpaceAlreadyExists("This name is already being used")
-        
+
         if github:
             owner, private, license = SharedMenus.get_github_info(
-                get_license=False
+                get_license=False,
+                kwargs=kwargs
             )
 
             self.__create_github_repo(
@@ -187,7 +189,7 @@ class WorkspaceFunctions:
             name=name,
             owner=owner,
             directory=directory)
-        
+
         ContentsManager(
             actions=2,
             directory=directory,
@@ -224,11 +226,15 @@ class WorkspaceFunctions:
             data = json.load(f)
 
         name = kwargs.get("name") or inquirer.text("Introduce el nombre del proyecto")
-        owner = kwargs.get("owner") or inquirer.list_input("¿Quién es el propietario del repositorio?")
-        private = kwargs.get("private") or "true" if inquirer.confirm("¿El repositorio es privado?", default=False) else "false"
+        owner, private, license = SharedMenus.get_github_info(
+            get_license=True,
+            kwargs=kwargs
+        )
 
         if name not in data.keys():
             raise WorkSpaceNotFound("No se encontró el workspace con ese nombre.")
+
+        language = data[name]["language"] or None
 
         self.__create_github_repo(
             name=name,
@@ -236,7 +242,9 @@ class WorkspaceFunctions:
             directory=data[name]["directory"],
             private=private,
             auto_init="false",
-            clone=False
+            clone=False,
+            license=license,
+            language=language
         )
 
         data[name]["owner"] = owner
@@ -306,7 +314,7 @@ class WorkspaceFunctions:
         if not inquirer.confirm("Want to perform changes?") and not self.yes:
             print("Exiting...")
             return None
-        
+
         with open(WORKSPACES, "r+") as f:
             data = json.dump(data, f)
 
@@ -319,7 +327,7 @@ class WorkspaceFunctions:
         owner: str = None,
         private: str = None
         ) -> None:
-        
+
         if not inquirer.confirm("Want to create the WorkSpace?") and not self.yes:
             print("Exiting...")
             return None
