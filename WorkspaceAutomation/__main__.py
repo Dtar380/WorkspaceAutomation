@@ -5,11 +5,16 @@
 #####  EXTERNAL IMPORTS
 # ENV AND PATHS
 import os
+import shutil
 import platform
+
+# RUNNING COMMANDS
+import sys
+import subprocess
 
 # CLI
 import argparse
-
+from yaspin import yaspin
 
 ##### INTERNAL IMPORTS
 # ERRORS
@@ -31,14 +36,56 @@ MAIN_DIRECTORY = settings_paths[platform.system()]
 #####     CLASS                              #####
 ##################################################
 
-class Renderer:
+## CUSTOM ARGPARSE ACTIONS
+# Update action
+class UpdateAction(argparse.Action):
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        self.__update()
+        print("The program has been updated successfully")
+        exit()
+
+    # Update if app is a python module
+    @yaspin(text="Updating application...")
+    def __update(self) -> None:
+        if "WorkSpaceAutomation" in sys.modules:
+            subprocess.check_call(
+                [sys.executable, '-m', 'pip', 'install', '-U', 'WorkSpaceAutomation'],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.STDOUT
+            )
+        else:
+            raise NotPythonModule("The program is not installed as a python module, update must be done by manually.")
+
+# Uninstall action
+class UninstallAction(argparse.Action):
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        self.__uninstall()
+        print("The program has been uninstalled successfully")
+        exit()
+
+    # Delete all files/folders and uninstall if its a python module
+    @yaspin(text="Uninstalling application...")
+    def __uninstall(self) -> None:
+        shutil.rmtree(MAIN_DIRECTORY, ignore_errors=True)
+        if "WorkSpaceAutomation" in sys.modules:
+            subprocess.check_call(
+                [sys.executable, '-m', 'pip', 'uninstall', 'WorkSpaceAutomation'],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.STDOUT
+            )
+        else:
+            raise NotPythonModule("The program is not installed as a python module, uninstall must be done by manually. (Program data was already errased)")
+
+## PARSER
+class Parser:
 
     def __init__(self) -> None:
 
         ## PARSER
         self.parser = argparse.ArgumentParser(
             usage=f"""
-General Usage:
 %(prog)s [-h] [-v]
 
 Set-Up:
@@ -48,10 +95,14 @@ Command:
 %(prog)s [-c COMMAND] [-k KEY] [--name NAME] [--directory DIRECTORY] [--language LANGUAGE] [--github GITHUB] [--owner OWNER] [--private PRIVATE] [--license LICENSE] [--new-directory NEW_DIRECTORY] [--add-apps ADD_APPS] [--del-apps DEL_APPS] [--add-urls ADD_URLS] [--del-urls DEL_URLS] [-y]
 
 SubCommand:
-%(prog)s [-c \"config\"] [-sc SUB_COMMAND] [-k KEY] [--vscode VS_CODE] [--setup-languages LANGUAGES] [--custom-dir CUSTOM_DIR] [--create-folders] [--github-user GITHUB_USER] [--api-key API_KEY] [-y]""")
+%(prog)s [-c config] [-sc SUB_COMMAND] [-k KEY] [--vscode VS_CODE] [--setup-languages LANGUAGES] [--custom-dir CUSTOM_DIR] [--create-folders] [--github-user GITHUB_USER] [--api-key API_KEY] [-y]""",
+            formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=90)
+        )
 
         ## GENERAL ARGUMENTS
         self.parser.add_argument('-v', '--version', action='version', version='Current version is ' + "0.1.0", help='Gives the version of the program')
+        self.parser.add_argument('--update', action=UpdateAction, help='Update the program to latest released version (Only if the program is a python module)')
+        self.parser.add_argument('--uninstall', action=UninstallAction, help='Uninstall the program, this action will not errase your workspaces')
 
         ## MAIN
         self.parser.add_argument('-i', '--init', action='store_true', help='Initialise the program')
@@ -108,7 +159,7 @@ SubCommand:
                 key=arguments["key"],
                 kwargs=arguments
             )
-            
+
         elif arguments.get("command"):
             App(
                 key=arguments["key"],
@@ -117,8 +168,13 @@ SubCommand:
                 kwargs=arguments
             )
 
+# Entry point for the CLI program
+def entry_point() -> None:
+
+    # Creates the parser and runs it
+    cli = Parser()
+    cli.main()
+
 #####  RUN FILE
 if __name__ == "__main__":
-
-    renderer = Renderer()
-    renderer.main()
+    entry_point()

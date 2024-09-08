@@ -3,6 +3,4 @@
 ########################################
 
 #####  INTERNAL IMPORTS
-from functions import WorkspaceFunctions
-import builders
-import runners
+from .functions import WorkspaceFunctions

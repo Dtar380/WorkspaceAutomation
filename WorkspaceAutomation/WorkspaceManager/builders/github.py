@@ -5,6 +5,7 @@
 #####  EXTERNAL IMPORTS
 # ENV MANAGEMENT
 import os
+import platform
 
 # HTTP REQUESTS
 import requests
@@ -26,7 +27,7 @@ from ...__vars__ import settings_paths
 GITHUB_API = "https://api.github.com" # GitHub API URL
 
 ##### DEFINE MAIN DIRECTORY
-MAIN_DIRECTORY = settings_paths[os.system()]
+MAIN_DIRECTORY = settings_paths[platform.system()]
 
 ########################################
 #####  CLASS                       #####

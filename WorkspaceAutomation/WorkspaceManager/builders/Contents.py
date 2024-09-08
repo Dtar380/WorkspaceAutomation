@@ -6,6 +6,7 @@
 # ENV MANAGEMENT
 import shutil
 import os
+import platform
 
 # CLI
 from yaspin import yaspin
@@ -18,7 +19,7 @@ from yaspin import yaspin
 from ...__vars__ import settings_paths, languages
 
 ##### DEFINE MAIN DIRECTORY ACCORDING TO OPERATING SYSTEM
-MAIN_DIRECTORY = settings_paths[os.system()]
+MAIN_DIRECTORY = settings_paths[platform.system()]
 
 ########################################
 #####  CLASS                       #####

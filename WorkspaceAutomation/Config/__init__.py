@@ -3,4 +3,4 @@
 ########################################
 
 #####  INTERNAL IMPORTS
-from functions import ConfigFunctions
+from .functions import ConfigFunctions

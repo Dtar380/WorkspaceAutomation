@@ -8,6 +8,7 @@ import json
 
 # ENV MANAGEMENT
 import os
+import platform
 
 # CLI
 import inquirer
@@ -18,7 +19,7 @@ from yaspin import yaspin
 from ..__errors__ import *
 
 # CLI
-from shared_menus import SharedMenus
+from .shared_menus import SharedMenus
 
 # BUILDERS
 from .builders import Github
@@ -36,7 +37,7 @@ from .runners import open_urls
 from ..__vars__ import settings_paths, languages
 
 ##### DEFINE MAIN DIRECTORY ACCORDING TO OPERATING SYSTEM
-MAIN_DIRECTORY = settings_paths[os.system()]
+MAIN_DIRECTORY = settings_paths[platform.system()]
 
 ##### DEFINE MAIN FILES DIRECTORIES
 WORKSPACES = os.path.join(MAIN_DIRECTORY, "workspaces.json")
@@ -179,7 +180,7 @@ class WorkspaceFunctions:
         directory = data[name]["directory"]
         owner = data[name]["owner"]
 
-        if inquirer.confirm(f"Want to delete the WorkSpace {name}?") and not self.yes:
+        if inquirer.confirm(f"Want to delete the WorkSpace {name}?") and self.yes:
             ContentsManager(
                 actions=2,
                 directory=directory,

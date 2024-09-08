@@ -67,8 +67,8 @@ class ConfigFunctions:
             "vscode": self.vscode_type,
             "languages": self.select_languages,
             "directories": self.select_directories,
-            "api-key": self.get_api_key,
-            "git-user": self.get_github_username
+            "github-user": self.get_github_username,
+            "api-key": self.get_api_key
         }
 
         # If the main command is init run every sub-command
@@ -79,7 +79,7 @@ class ConfigFunctions:
             clear(0.5)
             self.vscode = commands["vscode"](kwargs)
             clear(0.5)
-            self.git_user = commands["git-user"](kwargs)
+            self.git_user = commands["github-user"](kwargs)
             clear(0.5)
             self.api_key = commands["api-key"](kwargs)
             clear(0.5)

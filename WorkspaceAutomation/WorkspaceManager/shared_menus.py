@@ -52,7 +52,7 @@ class SharedMenus:
         private = kwargs.get("private") or "true" if inquirer.confirm("Do you want to create a private repository?", default=False) else "false"
 
         if get_license:
-            license = kwargs.get("license") or inquirer.list_input("Enter a license", choices=["MIT", "GPL-3.0", "Unlicense"])
+            license = kwargs.get("license") if kwargs.get("license") in ["MIT", "GPL-3.0", "Unlicense"] else inquirer.list_input("Enter a license", choices=["MIT", "GPL-3.0", "Unlicense"])
         else:
             license = None
 
@@ -63,7 +63,7 @@ class SharedMenus:
     def get_move_workspace_info(cls, directories: list, **kwargs) -> tuple:
 
         name = kwargs.get("name") or inquirer.text("Enter the name of your WorkSpace")
-        new_directory = kwargs.get("new_directory") or inquirer.list_input("Select the new directory for the WorkSpace", choices=directories)
+        new_directory = kwargs.get("new_directory") if kwargs.get("new_directory") in directories else inquirer.list_input("Select the new directory for the WorkSpace", choices=directories)
 
         return name, new_directory
 
@@ -81,7 +81,7 @@ class SharedMenus:
         apps = {}
 
         while True:
-            
+
             app = inquirer.text(message="Enter the name of the APP")
 
             command = command_generators[platform.system()](app)

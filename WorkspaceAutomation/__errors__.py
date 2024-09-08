@@ -2,6 +2,9 @@
 #####     ERRORS                             #####
 ##################################################
 
+## GENERAL ERRORS
+class NotPythonModule(Exception): ...
+
 ## SET-UP ERRORS
 class AppNotInitialised(Exception): ...
 class ReSetupError(Exception): ...
