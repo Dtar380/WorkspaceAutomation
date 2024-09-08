@@ -29,7 +29,7 @@
 
 ## :arrow_down: App Installation
 
-### Using built application
+### Using built application (Not aviable now)
 You can download the installer for your Operating System in the releases tab.<br>
 It's preferable to download the latest version always for many reasons. Download it [here](https://github.com/Dtar380/WorkspaceAutomation/releases/latest).
 
