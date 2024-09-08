@@ -108,6 +108,7 @@ SubCommand:
                 key=arguments["key"],
                 kwargs=arguments
             )
+            
         elif arguments.get("command"):
             App(
                 key=arguments["key"],
@@ -118,5 +119,6 @@ SubCommand:
 
 #####  RUN FILE
 if __name__ == "__main__":
+
     renderer = Renderer()
     renderer.main()

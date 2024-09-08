@@ -60,6 +60,7 @@ class WorkspaceFunctions:
         self.settings = settings
         self.yes = yes
 
+        # Valid commands
         commands = {
             "create": self.create_workspace,
             "import": self.import_workspace,

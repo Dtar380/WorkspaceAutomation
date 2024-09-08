@@ -23,6 +23,7 @@ code_paths = {
     "Linux": str(Path.home()) + "\\.config\\{}\\User\\globalStorage\\storage.json"
 }
 
+# Languages
 languages = {
     "Python": {
         "gitignore": "",

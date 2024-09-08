@@ -81,6 +81,7 @@ class SharedMenus:
         apps = {}
 
         while True:
+            
             app = inquirer.text(message="Enter the name of the APP")
 
             command = command_generators[platform.system()](app)
@@ -94,6 +95,7 @@ class SharedMenus:
                 return apps
 
     # Find APPs in each supported OS
+    # Find app pn Windows
     @yaspin(text=" Finding Application...")
     def __find_app_windows(self, app_name: str) -> list:
 
@@ -109,6 +111,7 @@ class SharedMenus:
         except:
             return None
 
+    # Find app on macOS
     @yaspin(text=" Finding Application...")
     def __find_app_macos(self, app_name: str):
 
@@ -124,6 +127,7 @@ class SharedMenus:
         except:
             return None
 
+    # Find app on Linux
     @yaspin(text=" Finding Application...")
     def __find_app_linux(self, app_name: str):
 

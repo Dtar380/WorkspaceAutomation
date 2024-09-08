@@ -60,13 +60,13 @@ class SetUp:
         self.api_key = config.api_key
 
         # Save settings to their respective locations
-        ConfigFunctions().save_settings(
-            sub_directories=self.directories,
-            languages=self.languages,
-            vscode=self.vscode,
-            git_username=self.git_username,
-            api_key=self.api_key
-        )
+        ConfigFunctions().save_settings(kwargs={
+            "directories": self.directories,
+            "languages": self.languages,
+            "vscode": self.vscode,
+            "github-user": self.git_username,
+            "api-key": self.api_key
+        })
 
     # Determine if os is compatible
     def __check_compatibility(self) -> None:

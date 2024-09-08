@@ -50,6 +50,7 @@ class App:
         **kwargs
         ) -> None:
 
+        # Set-up App variables
         self.yes = kwargs.get("yes") or False
         self.key = key
         self.__load_env_variables()
@@ -97,17 +98,14 @@ class App:
                 kwargs=kwargs
             )
 
-            change = config.parameter
+            # Save the change in a dictionary
+            change = {sub_command: config.parameter}
 
-            if sub_command == "api-key":
-                with open(SECRETS, "w+") as f:
-                    f.write(f'API_KEY = "{change.decode()}"')
-
-            elif sub_command:
-                self.settings[sub_command] = change
-
-                with open(SETTINGS, "w+") as f:
-                    json.dump(self.settings, f)
+            # Save changed settings
+            ConfigFunctions().save_settings(
+                settings=self.settings,
+                kwargs=change
+            )
 
         # The command given was incomplete or incorrect
         else:
@@ -116,19 +114,24 @@ class App:
     # Get saved API_KEY
     def __load_env_variables(self) -> None:
 
+        # Try to load the API_KEY
         try:
             load_dotenv(SECRETS)
             encrypted_key = os.getenv("API_KEY")
             self.API_KEY = Fernet(key_generator(self.key)).decrypt(encrypted_key).decode()
+
+        # Raise FileNotFoundError if the .secrets file does not exist
         except FileNotFoundError:
             raise FileNotFoundError(".secrets file was not found")
 
+        # Raise PasswordError if the password is incorrect
         else:
             raise PasswordError("Password is incorrect, API KEY could not get decrypted. Check if it was correctly typed.")
 
     # Get saved settings
     def __load_settings(self) -> None:
 
+        # Raise an error if the Settings file does not exist
         if not os.path.exists(SETTINGS):
             raise FileNotFoundError("Settings file was not found.")
 
