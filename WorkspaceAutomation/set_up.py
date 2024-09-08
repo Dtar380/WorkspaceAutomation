@@ -1,8 +1,8 @@
-########################################
-#####  IMPORTING MODULES           #####
-########################################
+##################################################
+#####     IMPORTS                            #####
+##################################################
 
-##### EXTERNAL IMPORTS
+#####  EXTERNAL IMPORTS
 # ENV AND PATHS
 import os
 import platform
@@ -14,41 +14,44 @@ from .__errors__ import *
 # CLI
 from .Config import ConfigFunctions
 
-########################################
-#####  GLOBAL VARIABLES            #####
-########################################
+##################################################
+#####     CODE                               #####
+##################################################
 
 from .__vars__ import settings_paths
 
-##### DEFINE MAIN DIRECTORY ACCORDING TO OPERATING SYSTEM
+#####  DEFINE MAIN DIRECTORY ACCORDING TO OPERATING SYSTEM
 MAIN_DIRECTORY = settings_paths[platform.system()]
 
-########################################
-#####  CLASS                       #####
-########################################
+##################################################
+#####     CLASS                              #####
+##################################################
 
 class SetUp:
 
-    ##### INITIALISE CLASS
     def __init__(self,
         key: str,
-        **kwargs) -> None:
+        **kwargs
+        ) -> None:
 
         # OS of the user
         self.__check_compatibility()
 
         # Check if a setup has already been performed
         if os.path.exists(MAIN_DIRECTORY):
-            raise Exception("Cannot re-setup, maybe you rather run 'config --sub-command' command.")
+            raise ReSetupError("Cannot re-setup, maybe you rather run '-c config -sc <sub_command>' command.")
         else:
             os.makedirs(MAIN_DIRECTORY, exist_ok=True)
 
-        config = ConfigFunctions(key=key,
+        # Create the config values
+        config = ConfigFunctions(
+            key=key,
             command="init",
-            kwargs=kwargs)
+            kwargs=kwargs
+        )
 
         # Variables related to settings.json
-        self.folders = config.folders
+        self.directories = config.directories
         self.languages = config.languages
         self.vscode = config.vscode
         self.git_username = config.git_user
@@ -58,17 +61,17 @@ class SetUp:
 
         # Save settings to their respective locations
         ConfigFunctions().save_settings(
-            sub_directories=self.folders,
+            sub_directories=self.directories,
             languages=self.languages,
             vscode=self.vscode,
             git_username=self.git_username,
             api_key=self.api_key
         )
 
-    # Checks for the OS of the user
+    # Determine if os is compatible
     def __check_compatibility(self) -> None:
 
-        # Accepted OS
+        # Compatible OS
         if platform.system() == "Linux":
             return None
         elif platform.system() == "Darwin":
@@ -76,6 +79,6 @@ class SetUp:
         elif platform.system() == "Windows":
             return None
 
-        # OS was not accepted
+        # Incompatibility Error
         else:
-            raise NotCompatibleOS("Not compatible Operating System.")
+            raise NotCompatibleOS("Your OS is not supported.")

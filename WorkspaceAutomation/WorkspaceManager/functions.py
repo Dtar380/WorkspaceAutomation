@@ -78,17 +78,18 @@ class WorkspaceFunctions:
     def create_workspace(self, **kwargs) -> None:
 
         name, directory, github, language = SharedMenus.get_workspace_info(
-            directories=self.settings["folders"],
+            directories=self.settings["directories"],
             languages=self.settings["languages"].keys(),
             get_language=True,
             kwargs=kwargs
         )
 
         if name in os.listdir(directory):
-            raise WorkSpaceAlreadyExists("This name is already being used")
+            raise WorkSpaceAlreadyExists("A WorkSpace with this name already exists.")
 
         if github:
             owner, private, license = SharedMenus.get_github_info(
+                default_owner=self.settings["github_user"],
                 get_license=True,
                 kwargs=kwargs
             )
@@ -127,17 +128,18 @@ class WorkspaceFunctions:
     def import_workspace(self, **kwargs) -> None:
 
         name, directory, github, language = SharedMenus.get_workspace_info(
-            directories=self.settings["folders"],
+            directories=self.settings["directories"],
             languages=self.settings["languages"].keys(),
             get_language=False,
             kwargs=kwargs
         )
 
         if name in os.listdir(directory):
-            raise WorkSpaceAlreadyExists("This name is already being used")
+            raise WorkSpaceAlreadyExists("A WorkSpace with this name already exists.")
 
         if github:
             owner, private, license = SharedMenus.get_github_info(
+                default_owner=self.settings["github_user"],
                 get_license=False,
                 kwargs=kwargs
             )
@@ -169,32 +171,35 @@ class WorkspaceFunctions:
         with open(WORKSPACES, "r+") as f:
             data = json.load(f)
 
-        name = kwargs.get("name") or inquirer.text("Introduce el nombre del proyecto")
+        name = kwargs.get("name") or inquirer.text("Enter the name of your WorkSpace")
         if name not in data:
-            raise WorkSpaceNotFound("No se encontró el workspace con ese nombre.")
+            raise WorkSpaceNotFound("There was no WorkSpace found with that name.")
 
         directory = data[name]["directory"]
         owner = data[name]["owner"]
 
-        if not inquirer.confirm(f"Want to delete the workspace {name}?") and not self.yes:
+        if inquirer.confirm(f"Want to delete the WorkSpace {name}?") and not self.yes:
+            ContentsManager(
+                actions=2,
+                directory=directory,
+                name=name
+            )
+
+        elif inquirer.confirm(f"Want to delete the repo {name}?") and self.yes:
+            Github(
+                action=2,
+                clone=False,
+                API_KEY=self.api_key,
+                name=name,
+                owner=owner,
+                directory=directory
+            )
+
+        else:
             print("exiting...")
             return None
 
         del data[name]
-
-        Github(
-            action=2,
-            clone=False,
-            API_KEY=self.api_key,
-            name=name,
-            owner=owner,
-            directory=directory)
-
-        ContentsManager(
-            actions=2,
-            directory=directory,
-            name=name
-        )
 
         with open(WORKSPACES, "w+") as f:
             json.dump(data, f)
@@ -205,9 +210,9 @@ class WorkspaceFunctions:
         with open(WORKSPACES, "r+") as f:
             data = json.load(f)
 
-        name = kwargs.get("name") or inquirer.text("Introduce el nombre del proyecto")
+        name = kwargs.get("name") or inquirer.text("Enter the name of your WorkSpace")
         if name not in data.keys():
-            raise WorkSpaceNotFound("No se encontró el workspace con ese nombre.")
+            raise WorkSpaceNotFound("There was no WorkSpace found with that name.")
 
         directory = data[name]["directory"]
         profile = SharedMenus.select_vscode_profile(vscode_settings=self.settings["vscode"]["path"])
@@ -225,14 +230,15 @@ class WorkspaceFunctions:
         with open(WORKSPACES, "r+") as f:
             data = json.load(f)
 
-        name = kwargs.get("name") or inquirer.text("Introduce el nombre del proyecto")
+        name = kwargs.get("name") or inquirer.text("Enter the name of your WorkSpace")
         owner, private, license = SharedMenus.get_github_info(
+            default_owner=self.settings["github_user"],
             get_license=True,
             kwargs=kwargs
         )
 
         if name not in data.keys():
-            raise WorkSpaceNotFound("No se encontró el workspace con ese nombre.")
+            raise WorkSpaceNotFound("There was no WorkSpace found with that name.")
 
         language = data[name]["language"] or None
 
@@ -257,7 +263,7 @@ class WorkspaceFunctions:
     def move_workspace(self, **kwargs) -> None:
 
         name, new_directory = SharedMenus.get_move_workspace_info(
-            directories=self.settings["folders"],
+            directories=self.settings["directories"],
             kwargs=kwargs
         )
 
@@ -265,9 +271,9 @@ class WorkspaceFunctions:
             data = json.load(f)
 
         if name not in data.keys():
-            raise WorkSpaceNotFound("No se encontró el workspace con ese nombre.")
+            raise WorkSpaceNotFound("There was no WorkSpace found with that name.")
 
-        if not inquirer.confirm(f"Want to move the workspace {name}?") and not self.yes:
+        if not inquirer.confirm(f"Want to move the WorkSpace {name}?") and not self.yes:
             print("Exiting...")
             return None
 
@@ -296,7 +302,7 @@ class WorkspaceFunctions:
 
         # REMOVE APPS FROM WORKSPACE
         if kwargs.get("del-apps"):
-            apps_to_delete = inquirer.Checkbox("apps", message="Selecciona las aplicaciones a eliminar.", choices=data["apps"].keys())
+            apps_to_delete = inquirer.Checkbox("apps", message="Please select the APPs to remove.", choices=data["apps"].keys())
             for app in inquirer.prompt([apps_to_delete])["apps"]:
                 del data["apps"][app]
 
@@ -307,7 +313,7 @@ class WorkspaceFunctions:
 
         # DELETE URLS FROM WORKSPACE
         if kwargs.get("del-urls"):
-            urls_to_delete = inquirer.Checkbox("urls", message="Selecciona las URLs a eliminar.", choices=data["urls"])
+            urls_to_delete = inquirer.Checkbox("urls", message="Please select the URLs to remove.", choices=data["urls"])
             for url in inquirer.prompt([urls_to_delete])["urls"]:
                 data["urls"].remove(url)
 

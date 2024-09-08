@@ -33,12 +33,12 @@ class SharedMenus:
     @classmethod
     def get_workspace_info(cls, directories: list, languages: list, get_language: bool, **kwargs) -> tuple:
 
-        name = kwargs.get("name") or inquirer.text("Introduce el nombre del proyecto:")
-        directory = kwargs.get("directory") or inquirer.list_input("Selecciona la carpeta del proyecto:", choices=directories)
-        github = kwargs.get("github") or inquirer.confirm("¿Deseas crear un repositorio de GitHub?", default=True)
+        name = kwargs.get("name") or inquirer.text("Enter the name of your WorkSpace")
+        directory = kwargs.get("directory") or inquirer.list_input("Select the directory for your WorkSpace", choices=directories)
+        github = kwargs.get("github") or inquirer.confirm("Do you want to create a GitHub repository?", default=True)
 
         if get_language:
-            language = kwargs.get("language") or inquirer.list_input("Selecciona el lenguaje de programación principal:", choices=languages)
+            language = kwargs.get("language") or inquirer.list_input("Select the main language for the project", choices=languages)
         else:
             language = None
 
@@ -46,13 +46,13 @@ class SharedMenus:
 
     # Get info to create GitHub repo
     @classmethod
-    def get_github_info(cls, get_license: bool, **kwargs) -> tuple:
+    def get_github_info(cls, default_owner: str, get_license: bool, **kwargs) -> tuple:
 
-        owner = kwargs.get("owner") or inquirer.text("Introduce el propietario del repositorio:")
-        private = kwargs.get("private") or "true" if inquirer.confirm("¿El repositorio es privado?", default=False) else "false"
+        owner = kwargs.get("owner") or inquirer.text("Enter the name of the owner of the repository", default=default_owner)
+        private = kwargs.get("private") or "true" if inquirer.confirm("Do you want to create a private repository?", default=False) else "false"
 
         if get_license:
-            license = kwargs.get("license") or inquirer.list_input("Introduce la licencia:", choices=["MIT", "GPL-3.0", "Unlicense"])
+            license = kwargs.get("license") or inquirer.list_input("Enter a license", choices=["MIT", "GPL-3.0", "Unlicense"])
         else:
             license = None
 
@@ -62,8 +62,8 @@ class SharedMenus:
     @classmethod
     def get_move_workspace_info(cls, directories: list, **kwargs) -> tuple:
 
-        name = kwargs.get("name") or inquirer.text("Introduce el nombre del proyecto:")
-        new_directory = kwargs.get("new_directory") or inquirer.list_input("Selecciona la nueva carpeta del proyecto:", choices=directories)
+        name = kwargs.get("name") or inquirer.text("Enter the name of your WorkSpace")
+        new_directory = kwargs.get("new_directory") or inquirer.list_input("Select the new directory for the WorkSpace", choices=directories)
 
         return name, new_directory
 
@@ -81,13 +81,13 @@ class SharedMenus:
         apps = {}
 
         while True:
-            app = inquirer.text(message="Enter the name for the App:")
+            app = inquirer.text(message="Enter the name of the APP")
 
             command = command_generators[platform.system()](app)
 
             if not command:
                 print(f"The App '{app}' Was not found")
-            elif inquirer.confirm(message=f"Want to use the app {app}"):
+            elif inquirer.confirm(message=f"Want to use the APP {app}"):
                 apps[app] = command
 
             if not inquirer.confirm(message="Want to add more APPs?"):

@@ -1,30 +1,39 @@
-########################################
-#####  IMPORTING MODULES           #####
-########################################
+##################################################
+#####     IMPORTS                            #####
+##################################################
 
 #####  EXTERNAL IMPORTS
+# ENV AND PATHS
+import os
+import platform
+
+# CLI
 import argparse
 
+
 ##### INTERNAL IMPORTS
+# ERRORS
+from .__errors__ import *
+
+# APP
 from .app import App
 from .set_up import SetUp
+##################################################
+#####     CODE                               #####
+##################################################
 
-########################################
-#####  CODE                        #####
-########################################
+from .__vars__ import settings_paths
 
-#####  MAIN FUNCTION
-class Renderer():
+#####  DEFINE MAIN DIRECTORY ACCORDING TO OPERATING SYSTEM
+MAIN_DIRECTORY = settings_paths[platform.system()]
+
+##################################################
+#####     CLASS                              #####
+##################################################
+
+class Renderer:
 
     def __init__(self) -> None:
-
-        ## USAGE
-        init_usage = "%(prog)s [-i] [-k KEY] [--vscode VS_CODE] [--set-up-languages LANGUAGES] [--custom-dir CUSTOM_DIR] [--create-folders] [--github-user GITHUB_USER]\
- [--api-key API_KEY] [-y]"
-        command_usage = "%(prog)s [-c COMMAND] [-k KEY] [--name NAME] [--directory DIRECTORY] [--language LANGUAGE] [--github GITHUB] [--owner OWNER]\
- [--private PRIVATE] [--license LICENSE] [--new-directory NEW_DIRECTORY] [--add-apps ADD_APPS] [--del-apps DEL_APPS] [--add-urls ADD_URLS] [--del-urls DEL_URLS] [-y]"
-        subcommand_usage = "%(prog)s [-c \"config\"] [-sc SUB_COMMAND] [-k KEY] [--vscode VS_CODE] [--set-up-languages LANGUAGES] [--custom-dir CUSTOM_DIR]\
- [--create-folders] [--github-user GITHUB_USER] [--api-key API_KEY] [-y]"
 
         ## PARSER
         self.parser = argparse.ArgumentParser(
@@ -33,13 +42,13 @@ General Usage:
 %(prog)s [-h] [-v]
 
 Set-Up:
-{init_usage}
+%(prog)s [-i] [-k KEY] [--vscode VS_CODE] [--set-up-languages LANGUAGES] [--custom-dir CUSTOM_DIR] [--create-folders] [--github-user GITHUB_USER] [--api-key API_KEY] [-y]
 
 Command:
-{command_usage}
+%(prog)s [-c COMMAND] [-k KEY] [--name NAME] [--directory DIRECTORY] [--language LANGUAGE] [--github GITHUB] [--owner OWNER] [--private PRIVATE] [--license LICENSE] [--new-directory NEW_DIRECTORY] [--add-apps ADD_APPS] [--del-apps DEL_APPS] [--add-urls ADD_URLS] [--del-urls DEL_URLS] [-y]
 
 SubCommand:
-{subcommand_usage}""")
+%(prog)s [-c \"config\"] [-sc SUB_COMMAND] [-k KEY] [--vscode VS_CODE] [--setup-languages LANGUAGES] [--custom-dir CUSTOM_DIR] [--create-folders] [--github-user GITHUB_USER] [--api-key API_KEY] [-y]""")
 
         ## GENERAL ARGUMENTS
         self.parser.add_argument('-v', '--version', action='version', version='Current version is ' + "0.1.0", help='Gives the version of the program')
@@ -55,7 +64,7 @@ SubCommand:
         self.parser.add_argument('--vscode', action='store', type=str, help='Enter your VSCode version type (code/insiders)')
         self.parser.add_argument('--set-up-languages', action='store', type=str, help='Enter a comma separated list of languages to install')
         self.parser.add_argument('--custom-dir', action='store', type=str, help='Path if you want to use a custom directory')
-        self.parser.add_argument('--create-folders', action='store_true', help='Set if you want to create new folders for the workspaces')
+        self.parser.add_argument('--create-directories', action='store_true', help='Set if you want to create new folders for the workspaces')
         self.parser.add_argument('--github-user', action='store', type=str, help='Enter your GitHub username')
         self.parser.add_argument('--api-key', action='store', type=str, help='Enter your GitHub API key')
 
@@ -85,13 +94,27 @@ SubCommand:
 
         arguments = vars(self.parser.parse_args())
 
+        # Check if key is provided
         if not arguments.get("key"):
-            raise Exception("Key is required")
+            raise PasswordNotProvided("The password must be provided.")
 
+        # Check if app was already initialised
+        if not os.path.exists(MAIN_DIRECTORY) and not arguments.get("init"):
+            raise AppNotInitialised("""The app is not set-up. Please run "--init" command.""")
+
+        # Run the program with the provided arguments
         if arguments.get("init"):
-            SetUp(key=arguments["key"], kwargs=arguments)
+            SetUp(
+                key=arguments["key"],
+                kwargs=arguments
+            )
         elif arguments.get("command"):
-            App(key=arguments["key"], command=arguments["command"], sub_command=arguments["sub_command"], kwargs=arguments)
+            App(
+                key=arguments["key"],
+                command=arguments["command"],
+                sub_command=arguments["sub_command"],
+                kwargs=arguments
+            )
 
 #####  RUN FILE
 if __name__ == "__main__":

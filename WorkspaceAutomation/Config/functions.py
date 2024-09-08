@@ -63,13 +63,13 @@ class ConfigFunctions:
         commands = {
             "vscode": self.vscode_type,
             "languages": self.select_languages,
-            "folders": self.select_folders,
+            "directories": self.select_directories,
             "api-key": self.get_api_key,
             "git-user": self.get_github_username
         }
 
         if command == "init":
-            self.folders = commands["folders"](kwargs)
+            self.directories = commands["directories"](kwargs)
             clear(0.5)
             self.languages = commands["languages"](kwargs)
             clear(0.5)
@@ -87,7 +87,7 @@ class ConfigFunctions:
     # Select VSCode type between insiders and normal
     def vscode_type(self, **kwargs) -> dict:
 
-        code_type = kwargs.get("vscode") or inquirer.list_input("", choices=["code", "insiders"])
+        code_type = kwargs.get("vscode") or inquirer.list_input("Select the VSCode type", choices=["code", "insiders"])
 
         code_dir = "code - insiders" if code_type == "insiders" else "code"
         code_PATH = "code-insiders" if code_type == "insiders" else "code"
@@ -123,60 +123,60 @@ class ConfigFunctions:
 
         return inquirer.prompt([question])["languages"]
 
-    ##### FOLDERS RELATED
-    # Get the folders to work on with the workspaces
-    def select_folders(self, **kwargs) -> tuple:
+    ##### DIRECTORIES RELATED
+    # Get the directories to work on with the workspaces
+    def select_directories(self, **kwargs) -> tuple:
 
         main_dir = kwargs.get("custom_dir") or Path(Path.joinpath(Path.home(), "Documents"))
-        create = kwargs.get("create_folders") or inquirer.confirm("", default=False)
+        create = kwargs.get("create_directories") or inquirer.confirm("Want to create new directories?", default=False)
 
         if not os.path.exists(main_dir):
-            raise DirectoryNotFound("Specified directory was not found")
+            raise DirectoryNotFound("Specified directory was not found.")
 
-        folders = [i.lower() for i in os.listdir(main_dir) if "." not in i]
+        directories = [i.lower() for i in os.listdir(main_dir) if "." not in i]
 
-        if folders and not create:
-            sub_directories = self.__select_folders(folders=folders)
+        if directories and not create:
+            sub_directories = self.__select_directories(directories=directories)
 
         else:
-            sub_directories = self.__ask_folders()
-            self.__create_folders(
+            sub_directories = self.__ask_directories()
+            self.__create_directories(
                 main_dir=main_dir,
                 sub_directories=sub_directories)
 
         return main_dir, sub_directories
 
-    # Get user selected folders
-    def __select_folders(self, folders) -> list:
+    # Get user selected directories
+    def __select_directories(self, directories) -> list:
 
-        if "github" in folders:
+        if "github" in directories:
             default = ["github"]
 
         question = inquirer.Checkbox(
-            name = "folders",
-            message = "Select the folders you want to use",
-            choices = folders,
+            name = "directories",
+            message = "Select the directories you want to use",
+            choices = directories,
             default = default)
 
-        return inquirer.prompt([question])["folders"]
+        return inquirer.prompt([question])["directories"]
 
-    # Get folders that user wants to create
-    def __ask_folders(self) -> list:
+    # Get directories that user wants to create
+    def __ask_directories(self) -> list:
 
         sub_directories = []
 
         while True:
-            folder = inquirer.text(message="Enter the name for the folder: ")
+            folder = inquirer.text(message="Enter the name for the folder")
 
             if inquirer.confirm(message=f"Want to create a folder called {folder}?"):
                 sub_directories.append(folder)
 
-            if not inquirer.confirm(message="Want to add more folders?"):
+            if not inquirer.confirm(message="Want to add more directories?"):
                 return sub_directories
 
-    # Create the new folders
-    @yaspin(text=" Creating folders...")
-    def __create_folders(self, main_dir: str, sub_directories: list) -> None:
+    # Create the new directories
+    @yaspin(text=" Creating directories...")
+    def __create_directories(self, main_dir: str, sub_directories: list) -> None:
 
         if not inquirer.confirm("Want to save changes?") and not self.yes:
             print("Exiting...")
@@ -189,7 +189,7 @@ class ConfigFunctions:
     # Get Api Key and return encrypted version
     def get_api_key(self, **kwargs) -> str:
 
-        new_key = kwargs.get("api_key") or inquirer.text("Introduce la nueva API key.")
+        new_key = kwargs.get("api_key") or inquirer.text("Enter your API Key")
 
         headers = {
             "Authorization": "Bearer " + new_key,
@@ -216,9 +216,9 @@ class ConfigFunctions:
     def get_github_username(self, **kwargs) -> str:
 
         while True:
-            username = kwargs.get("github_user") or inquirer.text("Input your GitHub username")
+            username = kwargs.get("github_user") or inquirer.text("Enter your GitHub username")
 
-            if inquirer.confirm("") and self.__check_github_user(username=username):
+            if inquirer.confirm(f"Is {username} correct?") and self.__check_github_user(username=username):
                 return username
 
     def __check_github_user(self, username: str) -> bool:
@@ -242,10 +242,10 @@ class ConfigFunctions:
         ) -> None:
 
         settings = {
-            "folders": sub_directories,
+            "directories": sub_directories,
             "languages": languages,
             "vscode": vscode,
-            "git-user": git_username
+            "github_user": git_username
         }
 
         settings_path = settings_paths[platform.system()]

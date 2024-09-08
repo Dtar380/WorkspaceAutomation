@@ -35,7 +35,7 @@ MAIN_DIRECTORY = settings_paths[os.system()]
 class Github:
 
     def __init__(self, action: int, clone: bool, API_KEY: str, name:str, owner: str, directory: str, **kwargs) -> None:
-        
+
         self.TOKEN = API_KEY
 
         self.headers = {
@@ -57,8 +57,8 @@ class Github:
                 gitignore = kwargs.get("gitignore") if auto_init == "true" else None
                 license = kwargs.get("license") if auto_init == "true" else None
             except:
-                raise MissingArgs("There are missing arguments, please re-run the command")
-        
+                raise MissingArguments("There are missing arguments, please re-run the command")
+
         self.directory = directory
         self.owner = owner
         self.name = name
@@ -69,13 +69,13 @@ class Github:
             else:
                 payload = '{"name":"' + self.name + '","private":' + private + ',"auto_init":' + auto_init + '"}'
             functions[action](payload)
-        
+
         elif action == 2:
             functions[action]()
-        
+
         if clone:
             self.__clone_repo()
-            
+
     @yaspin(text="Creating GitHub Repository...")
     def __create_user_repo(self, payload) -> None:
         requests.post(GITHUB_API+"/user/repos", data=payload, headers=self.headers)
@@ -101,7 +101,7 @@ class Github:
 
         if not os.path.exists("README.md"):
             os.system('ECHO #' + self.name + ' >> README.md')
-        
+
         os.system("git init")
         os.system("git add . && git commit -m 'Initial Commit' && git branch -M main")
         os.system(f"git remote add origin http://{self.TOKEN}@github.com/{self.owner}/{self.name}.git")

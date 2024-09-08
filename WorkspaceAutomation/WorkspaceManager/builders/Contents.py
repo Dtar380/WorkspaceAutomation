@@ -35,7 +35,7 @@ class ContentsManager:
         language: str = None,
         new_directory: str = None
         ) -> None:
-        
+
         # All actions in a list
         actions = [
             self.create_workspace,
@@ -56,12 +56,12 @@ class ContentsManager:
         # Execute action requested
         actions[action]()
 
-    ##### CREATE ALL FOLDERS AND FILES ACCORDING TO THE LANGUAGE SELECTED
+    ##### CREATE ALL DIRECTORIES AND FILES ACCORDING TO THE LANGUAGE SELECTED
     def create_workspace(self) -> None:
 
         os.makedirs(self.workspace_folder, exist_ok=True)
         os.chdir(self.workspace_folder)
-        
+
         directories: list = languages[self.language]["directories"]
         files: list = languages[self.language]["files"]
         venv_command: str = languages[self.language]["venv-command"]
@@ -73,7 +73,7 @@ class ContentsManager:
         files.extend([
             ".vscode/settings.json"
         ])
-        
+
         for directory in directories:
             os.makedirs(directory)
 
@@ -89,6 +89,6 @@ class ContentsManager:
         shutil.move(self.workspace_folder, self.new_workspace_folder)
         self.delete_workspace()
 
-    ##### DELETE ALL FOLDERS AND FILES FROM A WORKSPACE
+    ##### DELETE ALL DIRECTORIES AND FILES FROM A WORKSPACE
     def delete_workspace(self) -> None:
         shutil.rmtree(self.workspace_folder)
