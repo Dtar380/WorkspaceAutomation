@@ -4,6 +4,8 @@ All released versions changes will be tracked and documented in this file.
 
 ## [Unreleased]
 
+## [0.1.1](https://github.com/Dtar380/WorkspaceAutomation/releases/tag/0.1.1) - 10th September 2024
+
 This is a hotfix release, read more on the [**Fixed**](#fixed)
 
 ### Fixed
