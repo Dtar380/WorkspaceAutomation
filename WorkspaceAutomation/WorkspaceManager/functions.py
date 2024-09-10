@@ -180,14 +180,14 @@ class WorkspaceFunctions:
         directory = data[name]["directory"]
         owner = data[name]["owner"]
 
-        if inquirer.confirm(f"Want to delete the WorkSpace {name}?") and self.yes:
+        if self.yes or inquirer.confirm(f"Want to delete the WorkSpace {name}?"):
             ContentsManager(
                 actions=2,
                 directory=directory,
                 name=name
             )
 
-        elif inquirer.confirm(f"Want to delete the repo {name}?") and self.yes:
+        if self.yes or inquirer.confirm(f"Want to delete the repo {name}?"):
             Github(
                 action=2,
                 clone=False,
@@ -196,10 +196,6 @@ class WorkspaceFunctions:
                 owner=owner,
                 directory=directory
             )
-
-        else:
-            print("exiting...")
-            return None
 
         del data[name]
 
@@ -275,7 +271,7 @@ class WorkspaceFunctions:
         if name not in data.keys():
             raise WorkSpaceNotFound("There was no WorkSpace found with that name.")
 
-        if not inquirer.confirm(f"Want to move the WorkSpace {name}?") and not self.yes:
+        if not self.yes or not inquirer.confirm(f"Want to move the WorkSpace {name}?"):
             print("Exiting...")
             return None
 
@@ -319,7 +315,7 @@ class WorkspaceFunctions:
             for url in inquirer.prompt([urls_to_delete])["urls"]:
                 data["urls"].remove(url)
 
-        if not inquirer.confirm("Want to perform changes?") and not self.yes:
+        if not self.yes or not inquirer.confirm("Want to perform changes?"):
             print("Exiting...")
             return None
 
@@ -336,7 +332,7 @@ class WorkspaceFunctions:
         private: str = None
         ) -> None:
 
-        if not inquirer.confirm("Want to create the WorkSpace?") and not self.yes:
+        if not self.yes or not inquirer.confirm("Want to create the WorkSpace?"):
             print("Exiting...")
             return None
 
@@ -371,7 +367,7 @@ class WorkspaceFunctions:
         language: str = None,
         ) -> None:
 
-        if not inquirer.confirm("Want to create the repo?") and not self.yes:
+        if not self.yes or not inquirer.confirm("Want to create the repo?"):
             print("Exiting...")
             return None
 

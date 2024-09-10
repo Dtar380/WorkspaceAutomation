@@ -14,6 +14,7 @@ import subprocess
 
 # CLI
 import argparse
+import inquirer
 from yaspin import yaspin
 
 ##### INTERNAL IMPORTS
@@ -147,7 +148,10 @@ SubCommand:
 
         # Check if key is provided
         if not arguments.get("key"):
-            raise PasswordNotProvided("The password must be provided.")
+            key = inquirer.text("Enter your key")
+            arguments["key"] = key
+        if not arguments.get("key"):
+            raise PasswordNotProvided("Exiting...")
 
         # Check if app was already initialised
         if not os.path.exists(MAIN_DIRECTORY) and not arguments.get("init"):

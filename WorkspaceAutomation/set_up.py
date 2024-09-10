@@ -37,6 +37,9 @@ class SetUp:
         # OS of the user
         self.__check_compatibility()
 
+        # Set the yes variable
+        self.yes = kwargs.get("yes") or False
+
         # Check if a setup has already been performed
         if os.path.exists(MAIN_DIRECTORY):
             raise ReSetupError("Cannot re-setup, maybe you rather run '-c config -sc <sub_command>' command.")
@@ -47,6 +50,7 @@ class SetUp:
         config = ConfigFunctions(
             key=key,
             command="init",
+            yes=self.yes,
             kwargs=kwargs
         )
 

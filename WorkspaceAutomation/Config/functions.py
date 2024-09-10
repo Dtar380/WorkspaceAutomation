@@ -108,7 +108,7 @@ class ConfigFunctions:
         }
 
         # Ask for confirmation
-        if not inquirer.confirm("Want to save changes?") and not self.yes and self.command != "init":
+        if self.command != "init" and (not self.yes or not inquirer.confirm("Want to save changes?")):
                 print("Exiting...")
                 return None
 
@@ -135,7 +135,7 @@ class ConfigFunctions:
         answer = inquirer.prompt([question])["languages"]
 
         # Ask for confirmation
-        if not inquirer.confirm("Want to save changes?") and not self.yes and self.command != "init":
+        if not self.command != "init" and (not self.yes or not inquirer.confirm("Want to save changes?")):
             print("Exiting...")
             return None
 
@@ -211,7 +211,7 @@ class ConfigFunctions:
     def __create_directories(self, main_dir: str, sub_directories: list) -> None:
 
         # Ask for confirmation
-        if not inquirer.confirm("Want to save changes?") and not self.yes and self.command != "init":
+        if not self.command != "init" and (not self.yes or not inquirer.confirm("Want to save changes?")):
             print("Exiting...")
             return None
 
@@ -245,7 +245,7 @@ class ConfigFunctions:
         encrypted_key = Fernet(key_generator(self.key)).encrypt(new_key.encode()).decode()
 
         # Ask for confirmation
-        if not inquirer.confirm("Want to save changes?") and not self.yes and self.command != "init":
+        if not self.command != "init" and (not self.yes or not inquirer.confirm("Want to save changes?")):
             raise Exception("Exiting...")
 
         # Return encrypted API Key

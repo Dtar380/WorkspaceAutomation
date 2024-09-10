@@ -67,7 +67,7 @@ exclude = ["tests*"]
 [tool.briefcase]
 project_name = "WorkSpace Automation"
 bundle = "com.github"
-version = "0.1.0"
+version = "0.1.1"
 url = "https://github.com/Dtar380/WorkspaceAutomation"
 license.file = "LICENSE"
 author = "Dtar380"

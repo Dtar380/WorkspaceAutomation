@@ -35,7 +35,15 @@ MAIN_DIRECTORY = settings_paths[platform.system()]
 
 class Github:
 
-    def __init__(self, action: int, clone: bool, API_KEY: str, name:str, owner: str, directory: str, **kwargs) -> None:
+    def __init__(self,
+        action: int,
+        clone: bool,
+        API_KEY: str,
+        name:str,
+        owner: str,
+        directory: str,
+        **kwargs
+        ) -> None:
 
         self.TOKEN = API_KEY
 
@@ -65,6 +73,7 @@ class Github:
         self.name = name
 
         if action in (0,1):
+
             if auto_init == "true":
                 payload = '{"name":"' + self.name + '","private":' + private + ',"auto_init":' + auto_init + ',"gitignore_template":"' + gitignore +  '","license_template":"' + license + '"}'
             else:

@@ -1,8 +1,8 @@
 # CHANGELOG
-
+---
 All released versions changes will be tracked and documented in this file.
 
-## [Unreleased]
+## [Unreleased]()
 
 This is a hotfix release, read more on the [**Fixed**](#fixed)
 
