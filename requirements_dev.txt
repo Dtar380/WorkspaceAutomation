@@ -4,7 +4,7 @@ requests==2.32.3
 click==8.1.7
 yaspin==3.0.2
 inquirer==3.3.0
-cryptography==43.0.0
+cryptography==43.0.1
 
 # BUILD REQUIRED
 briefcase==0.3.19
