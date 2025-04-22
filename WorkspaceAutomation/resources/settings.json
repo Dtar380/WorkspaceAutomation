@@ -1,0 +1,19 @@
+{
+  "os": "",
+  "directories": [
+    ""
+  ],
+  "language": "",
+  "editors": {
+    "code": {
+      "name": "",
+      "path": ""
+    }
+  },
+  "gits": {
+    "github": {
+      "username": "",
+      "token": ""
+    }
+  }
+}
